@@ -1,0 +1,66 @@
+/* Centering the main animation */
+.animation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+  position: relative;
+}
+
+/* Main "hola'" text that stays visible */
+.main-text {
+  font-size: 5rem;
+  color: #b19cd9;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+/* Faded, animated text style */
+.animated-text {
+  font-size: 5rem;
+  color: transparent;
+  -webkit-text-stroke: 1px #b19cd9;
+  position: absolute;
+  opacity: 0;
+}
+
+/* Move faded text up and down */
+.faded-up {
+  animation: fadeOutAndMoveUp 3s forwards;
+}
+
+.faded-down {
+  animation: fadeOutAndMoveDown 3s forwards;
+}
+
+/* Keyframes for moving faded text up and fading out */
+@keyframes fadeOutAndMoveUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-30px) scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* Keyframes for moving faded text down and fading out */
+@keyframes fadeOutAndMoveDown {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(30px) scale(0.7);
+    opacity: 0;
+  }
+}

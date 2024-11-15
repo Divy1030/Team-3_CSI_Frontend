@@ -1,0 +1,18 @@
+@font-face {
+    font-family: 'Baloo';
+    src: url('C:\React\social\frontend\src\assets\fonts\Baloo-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.hola-text {
+    font-family: 'Baloo', sans-serif;
+    font-size: 85vh;
+    /* font-weight: bold; */
+    line-height: 70vh;
+    margin-top: -2vh;
+    /* color: #b19cd9; */
+    /* text-shadow: 0 0 0px rgba(217, 176, 255, 1); */
+    -webkit-text-stroke: 15px white;
+    opacity: 1;
+}
