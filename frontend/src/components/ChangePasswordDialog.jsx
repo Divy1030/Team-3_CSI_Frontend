@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
-import axiosInstance from '../redux/axiosInstance'; // Import the axios instance
+import axios from 'axios'; // Import axios
 
 const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
   const [oldPassword, setOldPassword] = useState('');
@@ -29,7 +29,7 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
     }
 
     // Retrieve access token
-    const token = localStorage.getItem('access_token'); // Ensure correct key
+    const token = localStorage.getItem('accessToken'); // Ensure correct key
     console.log('Access Token:', token); // Debug log
 
     if (!token) {
@@ -40,9 +40,13 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post('/auth/change-password/', {
+      const response = await axios.post('https://hola-project.onrender.com/api/auth/change-password/', {
         old_password: oldPassword,
         new_password: newPassword,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       console.log('Response Status:', response.status); // Debug log

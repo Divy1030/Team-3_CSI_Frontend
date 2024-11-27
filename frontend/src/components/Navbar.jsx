@@ -85,8 +85,8 @@ const Navbar = () => {
     }
   };
 
-  const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}/shared/`);
+  const handleUserClick = (user) => {
+    navigate(`/user-profile/${user.id}`, { state: { userProfile: user } });
     setSearchResults([]);
     setSearchQuery('');
   };
@@ -112,7 +112,7 @@ const Navbar = () => {
                 <div
                   key={result.id}
                   className='p-2 cursor-pointer hover:bg-gray-200'
-                  onClick={() => handleUserClick(result.id)}
+                  onClick={() => handleUserClick(result)}
                 >
                   {result.username}
                 </div>
