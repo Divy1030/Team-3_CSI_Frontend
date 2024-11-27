@@ -1,11 +1,22 @@
 import React from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
-const LiveStreaming = () => {
+const LiveStreaming = ({ liveUsers }) => {
   return (
-    <div className='bg-white p-4 rounded-lg shadow-md mb-4 w-full'>
-      <h2 className='font-bold text-lg mb-2'>Live Streaming</h2>
-      <div className='flex items-center justify-center h-64 bg-gray-200 rounded-lg'>
-        <p className='text-gray-500'>Live streaming feature coming soon...</p>
+    <div className='bg-[#1a1a1a] p-4 rounded-lg'>
+      <h2 className='text-lg font-semibold text-white mb-4'>Live Streaming</h2>
+      <div className='space-y-4'>
+        {liveUsers.map(user => (
+          <div key={user.id} className='flex items-center'>
+            <Avatar className="w-12 h-12 mr-4">
+              <AvatarImage src="/api/placeholder/32/32" alt={user.username} className="rounded-full" />
+              <AvatarFallback>{user.username[0]}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className='text-sm font-semibold text-white'>{user.username}</h3>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

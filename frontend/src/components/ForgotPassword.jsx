@@ -1,15 +1,43 @@
 import React, { useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import ProgressIndicator from './ProgressIndicator'; // Import the ProgressIndicator component
+import ProgressIndicator from './ProgressIndicator';
+import axios from 'axios';
 
 const ForgotPassword = () => {
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const requestOtpHandler = async (e) => {
+        e.preventDefault();
+        try {
+            setLoading(true);
+            const response = await axios.post('http://hola-project.onrender.com/api/auth/forgot-password/', { email });
+            toast.success(response.data.message);
+            navigate('/verify-otp', { state: { email } });
+        } catch (error) {
+            console.log('Error:', error);
+            if (!navigator.onLine) {
+                toast.error("No internet connection. Please check your network settings.");
+            } else if (error.response) {
+                toast.error(error.response.data.error || "Failed to send OTP. Please try again.");
+            } else {
+                toast.error("Network error. Please try again.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-20 rounded-3xl form-container">
             <form onSubmit={requestOtpHandler} className="w-full max-w-md space-y-4">
                 <div className="mb-6">
-                    <ProgressIndicator step={1} /> {/* Add the ProgressIndicator component */}
+                    <ProgressIndicator step={1} />
                 </div>
                 <div className='mb-6 text-center'>
                     <h1 className="text-3xl font-bold">
@@ -26,7 +54,7 @@ const ForgotPassword = () => {
                         placeholder="Enter your email"
                     />
                 </div>
-                <div className='mb-10'></div> {/* Add a gap between the input field and the button */}
+                <div className='mb-10'></div>
                 {
                     loading ? (
                         <Button className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center">
@@ -41,7 +69,7 @@ const ForgotPassword = () => {
                 }
             </form>
         </div>
-    )
+    );
 }
 
 export default ForgotPassword;
