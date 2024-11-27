@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useEffect, useState } from 'react';
 import ChatPage from './components/ChatPage';
 import EditProfile from './components/EditProfile';
@@ -10,19 +9,21 @@ import Signup from './components/Signup';
 import ForgotPassword from './components/ForgotPassword';
 import VerifyOtp from './components/VerifyOtp';
 import ResetPassword from './components/ResetPassword';
-import Layout from './components/Layout'; // Import the Layout component
-import CreatePost from './components/CreatePost'; // Import the CreatePost component
-import CreatePostStep2 from './components/CreatePostStep2'; // Import the CreatePostStep2 component
-import Settings from './components/Settings'; // Import the Settings component
-// import LocationMap from './components/LocationMap'; // Import the LocationMap component
+import Layout from './components/Layout'; 
+import CreatePost from './components/CreatePost';
+import CreatePostStep2 from './components/CreatePostStep2';
+import Settings from './components/Settings'; 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { io } from "socket.io-client";
-import { useDispatch, useSelector } from 'react-redux';
-import { setSocket } from './redux/socketSlice';
-import { setOnlineUsers } from './redux/chatSlice';
-import { setLikeNotification } from './redux/rtnSlice';
-import ProtectedRoutes from './components/ProtectedRoutes';
-import SplashScreen from './components/SplashScreen'; // Import the SplashScreen component
+// import { Provider } from'react-redux';
+// import store from './redux/store';
+// import { PersistGate } from'redux-persist/integration/react';
+// import { persistStore } from'redux-persist';
+// import axios from 'axios';
+// // import { ToastContainer, toast } from'react-toastify';
+// // import'react-toastify/dist/ReactToastify.css';
+// import { setAuthUser } from './redux/authSlice';
+import Explore from './components/Explore'; 
+import MapComponent from './components/MapComponent'; // Import the MapComponent
 
 const browserRouter = createBrowserRouter([
   {
@@ -43,7 +44,7 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: '/chat',
-        element: <ChatPage /> // Ensure ChatPage is protected
+        element: <ChatPage /> 
       },
       {
         path: '/create-post',
@@ -51,11 +52,19 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: '/create-post-step2',
-        element: <CreatePostStep2 open={true} setOpen={() => {}} /> // Pass open and setOpen props
+        element: <CreatePostStep2 open={true} setOpen={() => {}} /> 
       },
       {
-        path: '/settings', // New Settings route
+        path: '/settings', 
         element: <Settings />
+      },
+      {
+        path: '/explore',
+        element: <Explore />
+      },
+      {
+        path: '/map',
+        element: <MapComponent /> // Add the Map route
       },
       // {
       //   path: '/location',

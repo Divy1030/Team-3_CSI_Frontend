@@ -1,19 +1,20 @@
-// FILE: LiveStreaming.jsx
 import React from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'; // Import Avatar components
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 const LiveStreaming = ({ liveUsers }) => {
   return (
-    <div className='mb-4 p-4 border-4 border-[#cab3fe] rounded-2xl'> {/* Add border and padding */}
-      <h2 className='text-lg font-bold mb-2 text-white'>Live</h2>
-      <div className='flex space-x-4'>
+    <div className='bg-[#1a1a1a] p-4 rounded-lg'>
+      <h2 className='text-lg font-semibold text-white mb-4'>Live Streaming</h2>
+      <div className='space-y-4'>
         {liveUsers.map(user => (
-          <div key={user.id} className='relative flex flex-col items-center'>
-            <Avatar className='w-16 h-16 border-4 border-[#796da8]'>
-              <AvatarImage src={user.profilePicture} alt={user.username} />
+          <div key={user.id} className='flex items-center'>
+            <Avatar className="w-12 h-12 mr-4">
+              <AvatarImage src="/api/placeholder/32/32" alt={user.username} className="rounded-full" />
               <AvatarFallback>{user.username[0]}</AvatarFallback>
             </Avatar>
-            <span className='mt-2 text-sm text-white'>{user.username}</span> {/* Add profile name below the image */}
+            <div>
+              <h3 className='text-sm font-semibold text-white'>{user.username}</h3>
+            </div>
           </div>
         ))}
       </div>

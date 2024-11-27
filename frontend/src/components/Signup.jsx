@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, Mail } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import EyeAnimation from './EyeAnimation'; // Import the EyeAnimation component
+import EyeAnimation from './EyeAnimation';
 
 const Signup = () => {
     const [input, setInput] = useState({
@@ -41,14 +41,14 @@ const Signup = () => {
         }
         try {
             setLoading(true);
-            const response = await axios.post('https://47df-2405-204-1287-fbe7-f923-7e02-f974-1f96.ngrok-free.app/api/auth/register/',{
+            const response = await axios.post('https://hola-project.onrender.com/api/auth/register/', {
                 full_name: input.username,
                 email: input.email,
                 password: input.password
             });
             if (response.data.success) {
                 toast.success("Signup successful!");
-                navigate("/login");
+                navigate("/login"); // Redirect to login page after successful signup
                 setInput({
                     username: "",
                     email: "",

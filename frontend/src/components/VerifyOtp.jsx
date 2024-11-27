@@ -5,8 +5,7 @@ import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import axios from 'axios';
-import ProgressIndicator from './ProgressIndicator'; // Import the ProgressIndicator component
-
+import ProgressIndicator from './ProgressIndicator';
 
 const VerifyOtp = () => {
     const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -19,7 +18,7 @@ const VerifyOtp = () => {
         if (isNaN(element.value)) return false;
         setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
 
-        // Focus on next input
+       
         if (element.nextSibling) {
             element.nextSibling.focus();
         }
@@ -45,7 +44,7 @@ const VerifyOtp = () => {
             // Temporarily bypass the API call
             // await axios.post('https://your-api-url.com/verify-otp', { email, otp: otpValue });
             toast.success("OTP verified! You can now reset your password.");
-            navigate('/reset-password', { state: { email } });
+            navigate('/reset-password', { state: { email, otp: otpValue } });
         } catch (error) {
             console.log(error);
             toast.error("Invalid OTP. Please try again.");
@@ -58,7 +57,7 @@ const VerifyOtp = () => {
         <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-20 rounded-3xl form-container">
             <form onSubmit={verifyOtpHandler} className="w-full max-w-md space-y-4">
                 <div className="mb-6">
-                    <ProgressIndicator step={2} /> {/* Add the ProgressIndicator component */}
+                    <ProgressIndicator step={2} /> 
                 </div>
                 <div className='mb-6 text-center'>
                     <h1 className="text-3xl font-bold">
@@ -84,7 +83,7 @@ const VerifyOtp = () => {
                         ))}
                     </div>
                 </div>
-                <div className='mb-10'></div> {/* Add a gap between the input field and the button */}
+                <div className='mb-10'></div> 
                 {
                     loading ? (
                         <Button className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center">

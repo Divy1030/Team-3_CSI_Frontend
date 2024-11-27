@@ -4,7 +4,8 @@ import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
-import ProgressIndicator from './ProgressIndicator'; // Import the ProgressIndicator component
+import ProgressIndicator from './ProgressIndicator'; 
+import axios from 'axios';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState("");
@@ -12,7 +13,7 @@ const ResetPassword = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { email } = location.state;
+    const { email, otp } = location.state;
 
     const resetPasswordHandler = async (e) => {
         e.preventDefault();
@@ -22,13 +23,22 @@ const ResetPassword = () => {
         }
         try {
             setLoading(true);
-            // Temporarily bypass the API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.success("Password reset successful! You can now log in.");
+            const response = await axios.post('http://hola-project.onrender.com/api/auth/reset-password/', {
+                email,
+                otp,
+                new_password: password
+            });
+            toast.success(response.data.message);
             navigate('/login');
         } catch (error) {
-            console.log(error);
-            toast.error("Failed to reset password. Please try again.");
+            console.log('Error:', error);
+            if (!navigator.onLine) {
+                toast.error("No internet connection. Please check your network settings.");
+            } else if (error.response) {
+                toast.error(error.response.data.error || "Failed to reset password. Please try again.");
+            } else {
+                toast.error("Network error. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
@@ -52,7 +62,7 @@ const ResetPassword = () => {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className=" w-full bg-[#2c2c2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
+                        className=" w-full bg-[#2c2e2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
                         placeholder="Enter new password"
                     />
                 </div>
@@ -61,11 +71,11 @@ const ResetPassword = () => {
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className=" w-full bg-[#2c2c2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
+                        className=" w-full bg-[#2c2e2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
                         placeholder="Confirm new password"
                     />
                 </div>
-                <div className='mb-5'></div> {/* Add a gap between the input field and the button */}
+                <div className='mb-5'></div>
                 {
                     loading ? (
                         <Button className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center">

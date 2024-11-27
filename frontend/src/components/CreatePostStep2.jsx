@@ -4,18 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPosts } from '@/redux/postSlice';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogHeader } from './ui/dialog'; // Import Dialog components
-import { FiMapPin } from 'react-icons/fi'; // Import FiMapPin icon
+import { Dialog, DialogContent, DialogHeader } from './ui/dialog'; 
+import { FiMapPin } from 'react-icons/fi'; 
 import axios from 'axios';
 
 const CreatePostStep2 = ({ open, setOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { imagePreview, file } = location.state || {};
-  const [locationInput, setLocationInput] = useState(""); // Add state for location input
-  const [hashtags, setHashtags] = useState(""); // Add state for hashtags input
-  const [hideViewCounts, setHideViewCounts] = useState(false); // Add state for hide view counts
-  const [hideLikeCounts, setHideLikeCounts] = useState(false); // Add state for hide like counts
+  const [locationInput, setLocationInput] = useState("");
+  const [hashtags, setHashtags] = useState(""); 
+  const [hideViewCounts, setHideViewCounts] = useState(false); 
+  const [hideLikeCounts, setHideLikeCounts] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(store => store.auth);
   const { posts } = useSelector(store => store.post);
@@ -23,10 +23,10 @@ const CreatePostStep2 = ({ open, setOpen }) => {
 
   const createPostHandler = async () => {
     const formData = new FormData();
-    formData.append("location", locationInput); // Append location to form data
-    formData.append("hashtags", hashtags); // Append hashtags to form data
-    formData.append("hideViewCounts", hideViewCounts); // Append hide view counts to form data
-    formData.append("hideLikeCounts", hideLikeCounts); // Append hide like counts to form data
+    formData.append("location", locationInput); 
+    formData.append("hashtags", hashtags); 
+    formData.append("hideViewCounts", hideViewCounts); 
+    formData.append("hideLikeCounts", hideLikeCounts); 
     if (imagePreview) formData.append("image", file);
     try {
       setLoading(true);

@@ -1,28 +1,27 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
-import { Bookmark, MessageCircle, MoreHorizontal, Send, Trash2 } from 'lucide-react';
+import { Bookmark, MessageCircle, MoreHorizontal, Send, Trash2, EyeOff, Flag } from 'lucide-react';
 import { Button } from './ui/button';
-import { FaHeart, FaRegHeart, FaPaperPlane } from "react-icons/fa"; // Import FaPaperPlane for Instagram-like share icon
+import { FaHeart, FaRegHeart, FaPaperPlane } from "react-icons/fa";
 import CommentDialog from './CommentDialog';
-import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { setPosts, setSelectedPost } from '@/redux/postSlice';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-const Post = ({ post }) => {
+const Post = ({ post, removePost, fetchAllPosts }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
-    const [showComments, setShowComments] = useState(false); // State to show/hide comments and comment input
-    const { user } = useSelector(store => store.auth);
-    const { posts } = useSelector(store => store.post);
-    const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
-    const [postLike, setPostLike] = useState(post.likes.length);
-    const [comment, setComment] = useState(post.comments);
-    const [bookmarked, setBookmarked] = useState(false); // Assuming initial state
-    const [shares, setShares] = useState(post.shares || 0); // Assuming initial state
-    const dispatch = useDispatch();
+    const [showComments, setShowComments] = useState(false); 
+    const userId = localStorage.getItem('userId');
+    const [liked, setLiked] = useState(post.likes?.includes(userId) || false);
+    const [postLike, setPostLike] = useState(post.likes_count || 0);
+    const [comment, setComment] = useState(post.comments_count || 0);
+    const [comments, setComments] = useState(post.comments || []);
+    const [bookmarked, setBookmarked] = useState(false); 
+    const [shares, setShares] = useState(post.shares || 0);
+
+    const BASE_URL = 'https://hola-project.onrender.com';
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -34,162 +33,182 @@ const Post = ({ post }) => {
     }
 
     const likeOrDislikeHandler = async () => {
-        try {
-            const action = liked ? 'dislike' : 'like';
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/${action}`, { withCredentials: true });
-            console.log(res.data);
-            if (res.data.success) {
-                const updatedLikes = liked ? postLike - 1 : postLike + 1;
-                setPostLike(updatedLikes);
-                setLiked(!liked);
-
-                // Update the post in the Redux store
-                const updatedPostData = posts.map(p =>
-                    p._id === post._id ? {
-                        ...p,
-                        likes: liked ? p.likes.filter(id => id !== user._id) : [...p.likes, user._id]
-                    } : p
-                );
-                dispatch(setPosts(updatedPostData));
-                toast.success(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            toast.error("User is not authenticated.");
+            return;
         }
-    }
 
-    const commentHandler = async () => {
         try {
-            const res = await axios.post(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/comment`, { text }, {
+            const action = liked ? 'unlike' : 'like';
+            const method = liked ? 'delete' : 'post';
+            const url = liked
+                ? `${BASE_URL}/api/posts/${post.id}/unlike/`
+                : `${BASE_URL}/api/posts/${post.id}/like/`;
+
+            const res = await axios({
+                method: method,
+                url: url,
                 headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            console.log(res.data);
-            if (res.data.success) {
-                const updatedCommentData = [...comment, res.data.comment];
-                setComment(updatedCommentData);
 
-                // Update the post in the Redux store
-                const updatedPostData = posts.map(p =>
-                    p._id === post._id ? {
-                        ...p,
-                        comments: updatedCommentData
-                    } : p
-                );
-                dispatch(setPosts(updatedPostData));
-                setText("");
-                toast.success(res.data.message);
+            if (res.status === 201 || res.status === 204) {
+                setLiked(!liked);
+                setPostLike(liked ? postLike - 1 : postLike + 1);
+                toast.success(res.data.message || (liked ? "Post unliked successfully!" : "Post liked successfully!"));
+                fetchAllPosts(); // Fetch the latest posts
+            } else {
+                toast.error(res.data.message || "An error occurred while liking/disliking the post.");
             }
         } catch (error) {
-            console.log(error);
-        }
-    }
-
-    const bookmarkHandler = async () => {
-        try {
-            const action = bookmarked ? 'remove-bookmark' : 'bookmark';
-            const res = await axios.get(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/${action}`, { withCredentials: true });
-            console.log(res.data);
-            if (res.data.success) {
-                setBookmarked(!bookmarked);
-                toast.success(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error("An error occurred while liking/disliking the post.");
         }
     }
 
     const deletePostHandler = async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            toast.error("User is not authenticated.");
+            return;
+        }
+
         try {
-            const res = await axios.delete(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}`, { withCredentials: true });
+            const res = await axios.delete(`${BASE_URL}/api/posts/${post.id}/`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             console.log(res.data);
-            if (res.data.success) {
-                const updatedPostData = posts.filter(p => p._id !== post._id);
-                dispatch(setPosts(updatedPostData));
-                toast.success(res.data.message);
-            }
+            removePost(post.id);
+            toast.success("Post deleted successfully!");
+            fetchAllPosts(); // Fetch the latest posts
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            toast.error("An error occurred while deleting the post.");
         }
     }
 
-    const shareHandler = async () => {
-        try {
-            // Assuming there's an API endpoint to handle sharing
-            const res = await axios.post(`https://instaclone-g9h5.onrender.com/api/v1/post/${post._id}/share`, {}, { withCredentials: true });
-            console.log(res.data);
-            if (res.data.success) {
-                setShares(shares + 1);
-                toast.success(res.data.message);
-            }
-        } catch (error) {
-            console.log(error);
+    const addCommentHandler = async () => {
+        if (!text.trim()) {
+            toast.error("Comment cannot be empty.");
+            return;
         }
+
+        try {
+            const res = await axios.post(`${BASE_URL}/api/posts/${post.id}/comments/`, {
+                content: text
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+            console.log(res.data);
+            setComments([...comments, res.data]);
+            setComment(comment + 1);
+            setText("");
+            toast.success("Comment added successfully!");
+            fetchAllPosts(); // Fetch the latest posts
+        } catch (error) {
+            console.error(error);
+            toast.error("An error occurred while adding the comment.");
+        }
+    }
+
+    const unfollowHandler = () => {
+        toast.success("Unfollowed successfully!");
+    }
+
+    const savePostHandler = () => {
+        setBookmarked(!bookmarked);
+        toast.success(bookmarked ? "Post unsaved!" : "Post saved!");
+    }
+
+    const sharePostHandler = () => {
+        // toast.success("Post shared successfully!");
+    }
+
+    const hideOrReportHandler = () => {
+        toast.success("Post hidden or reported!");
     }
 
     return (
         <div className='bg-[#343434] p-3 rounded-xl shadow-md max-w-2xl border-2 border-[#cab3fe] mx-auto text-white'> {/* Change background and text color */}
-            <div className='flex items-center mb-2'> {/* Adjust margin */}
-                <Avatar className='w-8 h-8 rounded-full mr-2'> {/* Adjust size */}
-                    <AvatarImage src={post.author.profilePicture} alt={post.author.username} />
-                    <AvatarFallback>{post.author.username[0]}</AvatarFallback>
+            <div className='flex items-center mb-2'> 
+                <Avatar className='w-8 h-8 rounded-full mr-2'>
+                    <AvatarImage src={post.created_by?.profilePicture ? `${BASE_URL}${post.created_by.profilePicture}` : ''} alt={post.created_by?.username} />
+                    <AvatarFallback>{post.created_by?.username?.[0]}</AvatarFallback>
                 </Avatar>
-                <span className='font-bold text-sm'>{post.author.username}</span> {/* Adjust font size */}
+                <span className='font-bold text-sm'>{post.created_by?.username}</span>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button className='ml-auto p-1 bg-transparent text-white'> {/* Adjust padding and text color */}
+                        <Button className='ml-auto p-1 bg-transparent text-white'> 
                             <MoreHorizontal />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent>
-                        <div className='flex flex-col'>
-                            <Button onClick={bookmarkHandler} className='flex items-center p-2 text-white'>
-                                <Bookmark className={bookmarked ? 'text-yellow-500' : 'text-white'} size={20} />
-                                <span className='ml-2'>Save Post</span>
-                            </Button>
-                            <Button onClick={deletePostHandler} className='flex items-center p-2 text-white'>
-                                <Trash2 size={20} />
-                                <span className='ml-2'>Delete Post</span>
-                            </Button>
+                    <PopoverContent className='bg-[#2b2b2b] text-white border-none'>
+                        <div className='flex flex-col text-left'>
+                            {/* <button onClick={unfollowHandler} className='p-2 text-white text-left'>
+                                Unfollow
+                            </button> */}
+                            <button onClick={savePostHandler} className='p-2 text-white text-left'>
+                                {bookmarked ? "Unsave Post" : "Save Post"}
+                            </button>
+                            <button onClick={sharePostHandler} className='p-2 text-white text-left'>
+                                Share
+                            </button>
+                            {/* <button onClick={hideOrReportHandler} className='p-2 text-white text-left'>
+                                Hide or Report
+                            </button> */}
+                            <button onClick={deletePostHandler} className='p-2 text-white text-left'>
+                                Delete Post
+                            </button>
                         </div>
                     </PopoverContent>
                 </Popover>
             </div>
-            <p className='mb-2 text-sm'>{post.caption}</p> {/* Move caption below profile image */}
-            <img src={post.image} alt={post.caption} className='w-full mb-2 rounded-lg' /> {/* Adjust margin */}
-            <div className='flex items-center mb-2'> {/* Adjust margin */}
-                <button onClick={likeOrDislikeHandler} className='mr-2 text-white'> {/* Adjust margin and text color */}
-                    {liked ? <FaHeart className='text-red-500' size={20} /> : <FaRegHeart size={20} />}
-                </button>
-                <span className='text-sm mr-4'>{postLike}</span> {/* Adjust font size */}
-                <button onClick={() => setShowComments(!showComments)} className='mr-2 text-white'> {/* Toggle comment input */}
-                    <MessageCircle size={20} />
-                </button>
-                <span className='text-sm mr-4'>{comment.length}</span> {/* Show number of comments */}
-                <button onClick={shareHandler} className='mr-2 text-white'> {/* Share button */}
-                    <FaPaperPlane size={20} />
-                </button>
-                <span className='text-sm mr-4'>{shares}</span> {/* Show number of shares */}
+            <p className='mb-2 text-sm'>{post.content}</p> 
+            {post.media && (
+                <>
+                    {console.log('Image URL:', post.media)} {/* Log the image URL */}
+                    <img src={post.media} alt={post.content} className='w-full mb-2 rounded-lg' />
+                </>
+            )} 
+            <div className='flex items-center mb-2'> {/* Align like, comment, and share in a line */}
+                <div className='flex items-center mr-4'>
+                    <button onClick={likeOrDislikeHandler} className='mr-2 text-white'> 
+                        {liked ? <FaHeart className='text-red-500' size={20} /> : <FaRegHeart size={20} />}
+                    </button>
+                    <span>{postLike} likes</span>
+                </div>
+                <div className='flex items-center mr-4'>
+                    <button onClick={() => setShowComments(!showComments)} className='mr-2 text-white'> 
+                        <MessageCircle size={20} />
+                    </button>
+                    <span>{comment} comments</span>
+                </div>
+                <div className='flex items-center'>
+                    <button onClick={sharePostHandler} className='mr-2 text-white'> 
+                        <FaPaperPlane size={20} />
+                    </button>
+                    <span>{shares} shares</span>
+                </div>
             </div>
             {showComments && (
                 <div>
-                    {comment.map((comment, index) => (
-                        <div key={index} className='mb-2 text-sm'> {/* Adjust margin and font size */}
-                            <span className='font-bold'>{comment.username}</span> {comment.comment}
-                        </div>
-                    ))}
-                    <div className='flex items-center mt-2'> {/* Adjust margin */}
+                    <CommentDialog open={showComments} setOpen={setShowComments} postId={post.id} />
+                    <div className='flex items-center mt-2'>
                         <input
-                            type="text"
+                            type='text'
                             value={text}
                             onChange={changeEventHandler}
-                            placeholder="Add a comment..."
-                            className="flex-grow bg-gray-100 p-2 rounded-lg text-sm text-black" 
+                            className='flex-grow p-2 rounded-md bg-[#2c2c2e] text-white'
+                            placeholder='Add a comment...'
                         />
-                        <Button onClick={commentHandler} className='ml-2 p-2 text-white'> {/* Adjust margin and text color */}
-                            <Send />
+                        <Button onClick={addCommentHandler} className='ml-2 bg-[#cab2ff] hover:bg-[#a655d1] text-black'>
+                            <FaPaperPlane />
                         </Button>
                     </div>
                 </div>

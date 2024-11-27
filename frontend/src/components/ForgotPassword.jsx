@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import ProgressIndicator from './ProgressIndicator';
+import axios from 'axios';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -15,13 +16,18 @@ const ForgotPassword = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            // Temporarily bypass the API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.success("OTP sent to your email!");
+            const response = await axios.post('http://hola-project.onrender.com/api/auth/forgot-password/', { email });
+            toast.success(response.data.message);
             navigate('/verify-otp', { state: { email } });
         } catch (error) {
-            console.log(error);
-            toast.error("Failed to send OTP. Please try again.");
+            console.log('Error:', error);
+            if (!navigator.onLine) {
+                toast.error("No internet connection. Please check your network settings.");
+            } else if (error.response) {
+                toast.error(error.response.data.error || "Failed to send OTP. Please try again.");
+            } else {
+                toast.error("Network error. Please try again.");
+            }
         } finally {
             setLoading(false);
         }

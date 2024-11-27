@@ -5,23 +5,17 @@ import Settings1 from './Settings1';
 
 const Settings = () => {
   return (
-    <div className="min-h-screen bg-black">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Main Content */}
-      <div className="flex">
-        {/* Left Sidebar - Fixed width */}
-        <div className="w-24 flex-shrink-0">
+    <div className="flex flex-col min-h-screen bg-black">
+     
+      <div className="fixed top-0 left-0 right-0 z-10">
+        <Navbar />
+      </div>
+      <div className="flex flex-1 pt-16">
+        <div className="w-54 flex-shrink-0">
           <LeftSidebar />
         </div>
-
-        {/* Settings Content - Takes up remaining space */}
-        <div className="flex-1 pl-24">
-          {/* Settings1 Component */}
-          <div className="pt-24">
-            <Settings1 />
-          </div>
+        <div className="flex-1 p-4 overflow-hidden">
+          <Settings1 />
         </div>
       </div>
     </div>

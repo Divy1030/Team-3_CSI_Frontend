@@ -1,16 +1,14 @@
-// FILE: Posts.jsx
 import React from 'react';
-import Post from './Post'; // Import the Post component
-import { mockPosts } from '../redux/mockData'; // Import the mock data
+import Post from './Post'; 
 
-const Posts = () => {
-  return (
-    <div className='space-y-4'>
-      {mockPosts.map(post => (
-        <Post key={post._id} post={post} />
-      ))}
-    </div>
-  );
+const Posts = ({ posts, removePost, fetchAllPost }) => {
+    return (
+        <div className='space-y-4'>
+            {posts.map(post => (
+                <Post key={post.id} post={post} removePost={removePost} fetchAllPost={fetchAllPost} />
+            ))}
+        </div>
+    );
 };
 
 export default Posts;

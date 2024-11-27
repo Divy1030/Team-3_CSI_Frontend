@@ -1,24 +1,51 @@
-import { setPosts } from "@/redux/postSlice";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-
+import { refreshToken } from "../redux/authService";
 
 const useGetAllPost = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        const fetchAllPost = async () => {
-            try {
-                const res = await axios.get('https://instaclone-g9h5.onrender.com/api/v1/post/all', { withCredentials: true });
-                if (res.data.success) { 
-                    console.log(res.data.posts);
-                    dispatch(setPosts(res.data.posts));
-                }
-            } catch (error) {
-                console.log(error);
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchAllPosts = async () => {
+        try {
+            let token = localStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error("No access token found");
             }
+
+            let res = await axios.get('https://hola-project.onrender.com/api/accounts/homepage/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (res.status === 401) {
+                token = await refreshToken();
+                res = await axios.get('https://hola-project.onrender.com/api/accounts/homepage/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+
+            if (res.status === 200) {
+                console.log('API Response:', res.data); // Log the response data
+                setPosts(res.data.posts || []); // Ensure posts is an array
+            }
+        } catch (error) {
+            console.log(error);
+            setError(error);
+        } finally {
+            setLoading(false);
         }
-        fetchAllPost();
+    };
+
+    useEffect(() => {
+        fetchAllPosts();
     }, []);
+
+    return { posts, loading, error, fetchAllPosts };
 };
+
 export default useGetAllPost;
