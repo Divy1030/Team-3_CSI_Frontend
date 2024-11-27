@@ -9,7 +9,7 @@ const Layout = ({ children }) => {
                     hola
                 </h1>
             </div>
-            <div className="relative w-2/6 max-w-screen-sm mt-40">
+            <div className="relative w-3/4 max-w-screen-sm mt-40">
                 {children}
             </div>
         </div>
