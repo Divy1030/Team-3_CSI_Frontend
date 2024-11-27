@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 
 const SavedLoginDialog = ({ isOpen, onClose, className }) => {
   const [isSavedLoginEnabled, setIsSavedLoginEnabled] = useState(false);
 
-  const toggleSavedLogin = () => setIsSavedLoginEnabled(!isSavedLoginEnabled);
+  useEffect(() => {
+    const savedLogin = localStorage.getItem('savedLogin');
+    if (savedLogin) {
+      setIsSavedLoginEnabled(true);
+    }
+  }, []);
+
+  const toggleSavedLogin = () => {
+    setIsSavedLoginEnabled(!isSavedLoginEnabled);
+    if (!isSavedLoginEnabled) {
+      // Save login information to local storage
+      const loginInfo = {
+        username: 'user@example.com', // Replace with actual username
+        password: 'password123' // Replace with actual password
+      };
+      localStorage.setItem('savedLogin', JSON.stringify(loginInfo));
+    } else {
+      // Remove login information from local storage
+      localStorage.removeItem('savedLogin');
+    }
+  };
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>

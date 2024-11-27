@@ -5,20 +5,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { setAuthUser } from '@/redux/authSlice';
+import Loader from './Loader'; // Import a loader component
 
 const EditProfileDialog = ({ isOpen, onClose }) => {
   const imageRef = useRef();
   const { user } = useSelector(store => store.auth);
   const [loading, setLoading] = useState(false);
+  const [profilePhotoLoading, setProfilePhotoLoading] = useState(false);
+  const [backgroundPhotoLoading, setBackgroundPhotoLoading] = useState(false);
   const [input, setInput] = useState({
     profilePhoto: user?.profilePicture,
+    backgroundPhoto: user?.backgroundPhoto,
     bio: user?.bio,
-    gender: user?.gender
   });
   const dispatch = useDispatch();
 
@@ -27,43 +29,45 @@ const EditProfileDialog = ({ isOpen, onClose }) => {
     if (file) setInput({ ...input, profilePhoto: file });
   };
 
-  const selectChangeHandler = (value) => {
-    setInput({ ...input, gender: value });
+  const backgroundFileChangeHandler = (e) => {
+    const file = e.target.files?.[0];
+    if (file) setInput({ ...input, backgroundPhoto: file });
   };
 
   const editProfileHandler = async () => {
-    console.log(input);
     const formData = new FormData();
-    formData.append("bio", input.bio);
-    formData.append("gender", input.gender);
-    if (input.profilePhoto) {
-      formData.append("profilePhoto", input.profilePhoto);
-    }
+    formData.append('bio', input.bio);
+    if (input.profilePhoto) formData.append('profile_photo', input.profilePhoto);
+    if (input.backgroundPhoto) formData.append('background_photo', input.backgroundPhoto);
+
     try {
       setLoading(true);
-      const res = await axios.post('https://instaclone-g9h5.onrender.com/api/v1/user/profile/edit', formData, {
+      setProfilePhotoLoading(true);
+      setBackgroundPhotoLoading(true);
+      const res = await axios.put('https://hola-project.onrender.com/api/accounts/profile/edit/', formData, {
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           'Content-Type': 'multipart/form-data'
-        },
-        withCredentials: true
+        }
       });
-      if (res.data.success) {
+      if (res.data) {
         const updatedUserData = {
           ...user,
-          bio: res.data.user?.bio,
-          profilePicture: res.data.user?.profilePicture,
-          gender: res.data.user.gender
+          bio: res.data.bio,
+          profilePicture: res.data.profile_photo,
+          backgroundPhoto: res.data.background_photo
         };
         dispatch(setAuthUser(updatedUserData));
-        toast.success(res.data.message);
-        onClose(); 
+        toast.success("Profile updated successfully!");
+        onClose();
       }
-
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.messasge);
+      console.error(error);
+      toast.error("An error occurred while updating profile.");
     } finally {
       setLoading(false);
+      setProfilePhotoLoading(false);
+      setBackgroundPhotoLoading(false);
     }
   };
 
@@ -98,18 +102,10 @@ const EditProfileDialog = ({ isOpen, onClose }) => {
               <Textarea value={input.bio} onChange={(e) => setInput({ ...input, bio: e.target.value })} name='bio' className="focus-visible:ring-transparent bg-[#1e2837] text-white border-2 border-[#9085b6]" />
             </div>
             <div>
-              <h1 className='font-bold mb-2'>Gender</h1>
-              <Select defaultValue={input.gender} onValueChange={selectChangeHandler}>
-                <SelectTrigger className="w-full bg-[#1e2837] text-white border-2 border-[#9085b6]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 text-white">
-                  <SelectGroup>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <h1 className='font-bold text-xl mb-2'>Background Photo</h1>
+              <input ref={imageRef} onChange={backgroundFileChangeHandler} type='file' className='hidden' />
+              <Button onClick={() => imageRef?.current.click()} className='bg-[#9085b6] h-8 hover:bg-[#7a6a9e]'>Change background photo</Button>
+              {backgroundPhotoLoading && <Loader />} {/* Conditionally render loader */}
             </div>
             <div className='flex justify-end'>
               {

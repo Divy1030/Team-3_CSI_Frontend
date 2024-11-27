@@ -16,9 +16,19 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [saveLogin, setSaveLogin] = useState(false); // State for saving login
   const { user } = useSelector(store => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const savedLogin = localStorage.getItem('savedLogin');
+    if (savedLogin) {
+      const { email, password } = JSON.parse(savedLogin);
+      setInput({ email, password });
+      handleLogin(email, password);
+    }
+  }, []);
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -28,34 +38,30 @@ const Login = () => {
     setShowPassword(!showPassword);
   }
 
-  const loginHandler = async (e) => {
-    e.preventDefault();
-
-    console.log(input.email);
-
+  const handleLogin = async (email, password) => {
     try {
       setLoading(true);
       const response = await axios.post('https://hola-project.onrender.com/api/auth/login/', {
-        email: input.email,
-        password: input.password
+        email,
+        password
       });
 
-      console.log('Login response:', response);
-
       if (response.data.access) {
-        
         localStorage.setItem('accessToken', response.data.access);
         localStorage.setItem('refreshToken', response.data.refresh);
 
-        
         const authenticatedUser = {
-          email: input.email,
+          email,
           token: response.data.access,
-          
         };
 
-       
         dispatch(setAuthUser(authenticatedUser));
+
+        if (saveLogin) {
+          localStorage.setItem('savedLogin', JSON.stringify({ email, password }));
+        } else {
+          localStorage.removeItem('savedLogin');
+        }
 
         toast.success("Login successful!");
         navigate("/");
@@ -67,7 +73,6 @@ const Login = () => {
       if (!navigator.onLine) {
         toast.error("No internet connection. Please check your network settings.");
       } else if (error.response) {
-        
         const errorMessage = error.response.data.message || "Login failed! Please try again.";
         toast.error(`Error: ${errorMessage} (Status: ${error.response.status})`);
       } else {
@@ -76,6 +81,11 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  }
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+    handleLogin(input.email, input.password);
   }
 
   useEffect(() => {
@@ -115,6 +125,19 @@ const Login = () => {
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={togglePasswordVisibility}>
             <EyeAnimation isVisible={showPassword} />
           </div>
+        </div>
+
+        <div className="flex items-center mt-4">
+          <input
+            type="checkbox"
+            id="saveLogin"
+            checked={saveLogin}
+            onChange={() => setSaveLogin(!saveLogin)}
+            className="mr-2"
+          />
+          <label htmlFor="saveLogin" className="text-sm text-white">
+            Remember me
+          </label>
         </div>
 
         <div className='text-right mt-2'>

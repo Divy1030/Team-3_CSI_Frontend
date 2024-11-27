@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ChatPage from './components/ChatPage';
 import EditProfile from './components/EditProfile';
 import Home from './components/Home';
@@ -13,17 +14,10 @@ import Layout from './components/Layout';
 import CreatePost from './components/CreatePost';
 import CreatePostStep2 from './components/CreatePostStep2';
 import Settings from './components/Settings'; 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-// import { Provider } from'react-redux';
-// import store from './redux/store';
-// import { PersistGate } from'redux-persist/integration/react';
-// import { persistStore } from'redux-persist';
-// import axios from 'axios';
-// // import { ToastContainer, toast } from'react-toastify';
-// // import'react-toastify/dist/ReactToastify.css';
-// import { setAuthUser } from './redux/authSlice';
 import Explore from './components/Explore'; 
-import MapComponent from './components/MapComponent'; // Import the MapComponent
+import MapComponent from './components/MapComponent'; 
+import UserSearchProfile from './components/UserSearchProfile';
+import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
 
 const browserRouter = createBrowserRouter([
   {
@@ -32,44 +26,84 @@ const browserRouter = createBrowserRouter([
     children: [
       {
         path: '/',
-        element:<Home />
+        element: (
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        )
       },
       {
         path: '/profile/:id',
-        element: <Profile />
+        element: (
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
+        )
       },
       {
         path: '/account/edit',
-        element: <EditProfile />
+        element: (
+          <PrivateRoute>
+            <EditProfile />
+          </PrivateRoute>
+        )
       },
       {
         path: '/chat',
-        element: <ChatPage /> 
+        element: (
+          <PrivateRoute>
+            <ChatPage />
+          </PrivateRoute>
+        )
       },
       {
         path: '/create-post',
-        element: <CreatePost />
+        element: (
+          <PrivateRoute>
+            <CreatePost />
+          </PrivateRoute>
+        )
       },
       {
         path: '/create-post-step2',
-        element: <CreatePostStep2 open={true} setOpen={() => {}} /> 
+        element: (
+          <PrivateRoute>
+            <CreatePostStep2 open={true} setOpen={() => {}} />
+          </PrivateRoute>
+        )
       },
       {
-        path: '/settings', 
-        element: <Settings />
+        path: '/settings',
+        element: (
+          <PrivateRoute>
+            <Settings />
+          </PrivateRoute>
+        )
       },
       {
         path: '/explore',
-        element: <Explore />
+        element: (
+          <PrivateRoute>
+            <Explore />
+          </PrivateRoute>
+        )
       },
       {
         path: '/map',
-        element: <MapComponent /> // Add the Map route
+        element: (
+          <PrivateRoute>
+            <MapComponent />
+          </PrivateRoute>
+        )
       },
-      // {
-      //   path: '/location',
-      //   element: <LocationMap /> // Add the LocationMap route
-      // },
+      {
+        path: '/user-profile/:userId',
+        element: (
+          <PrivateRoute>
+            <UserSearchProfile />
+          </PrivateRoute>
+        )
+      }
     ]
   },
   {
