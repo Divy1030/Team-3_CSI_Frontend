@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock, User, Users, Clock, Heart, Ban, Shield, Globe, HelpCircle } from 'lucide-react';
 import PasswordAndSecurityDialog from './PasswordAndSecurityDialog'; 
 import EditProfileDialog from './EditProfileDialog'; 
@@ -7,6 +7,11 @@ import BlockedPeopleDialog from './BlockedPeopleDialog';
 import AccountPrivacyDialog from './AccountPrivacyDialog'; 
 import SavedPostsDialog from './SavedPostsDialog'; 
 import ArchivedPostsDialog from './ArchivedPostsDialog'; 
+import AddAccountDialog from './AddAccountDialog'; // Import the AddAccountDialog component
+import AccountsDialog from './AccountsDialog'; // Import the AccountsDialog component
+import { useDispatch } from 'react-redux';
+import { setAuthUser } from '@/redux/authSlice';
+import { toast } from 'sonner';
 
 const Settings1 = () => {
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -16,6 +21,16 @@ const Settings1 = () => {
   const [isAccountPrivacyDialogOpen, setIsAccountPrivacyDialogOpen] = useState(false); 
   const [isSavedPostsDialogOpen, setIsSavedPostsDialogOpen] = useState(false); 
   const [isArchivedPostsDialogOpen, setIsArchivedPostsDialogOpen] = useState(false); 
+  const [isAddAccountDialogOpen, setIsAddAccountDialogOpen] = useState(false); // State for AddAccountDialog
+  const [isAccountsDialogOpen, setIsAccountsDialogOpen] = useState(false); // State for AccountsDialog
+  const [accounts, setAccounts] = useState([]); // State to store added accounts
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Load accounts from local storage
+    const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+    setAccounts(savedAccounts);
+  }, []);
 
   const openPasswordDialog = () => setIsPasswordDialogOpen(true);
   const closePasswordDialog = () => setIsPasswordDialogOpen(false);
@@ -37,6 +52,32 @@ const Settings1 = () => {
 
   const openArchivedPostsDialog = () => setIsArchivedPostsDialogOpen(true);
   const closeArchivedPostsDialog = () => setIsArchivedPostsDialogOpen(false);
+
+  const openAddAccountDialog = () => setIsAddAccountDialogOpen(true); // Open AddAccountDialog
+  const closeAddAccountDialog = () => setIsAddAccountDialogOpen(false); // Close AddAccountDialog
+
+  const openAccountsDialog = () => setIsAccountsDialogOpen(true); // Open AccountsDialog
+  const closeAccountsDialog = () => setIsAccountsDialogOpen(false); // Close AccountsDialog
+
+  const handleAccountAdded = (account) => {
+    setAccounts([...accounts, account]);
+    closeAddAccountDialog();
+  };
+
+  const handleAccountClick = (account) => {
+    // Simulate logging in as the selected account
+    const authenticatedUser = {
+      email: account.email,
+      token: 'mock-token',
+    };
+
+    localStorage.setItem('accessToken', 'mock-access-token');
+    localStorage.setItem('refreshToken', 'mock-refresh-token');
+
+    dispatch(setAuthUser(authenticatedUser));
+    toast.success(`Switched to account: ${account.email}`);
+    closeAccountsDialog();
+  };
 
   const [savedPosts, setSavedPosts] = useState([
     {
@@ -128,7 +169,6 @@ const Settings1 = () => {
     <div className="bg-black text-gray-100 p-4 w-full max-w-3xl mx-auto h-full overflow-y-auto">
       <div className="text-lg mb-4">Settings</div>
       
-   
       <div className="bg-gray-800 rounded-lg p-4 mb-4">
         <div className="mb-2">Accounts Center</div>
         <div className="text-sm text-gray-400 mb-3">
@@ -142,12 +182,11 @@ const Settings1 = () => {
           <User className="w-5 h-5 mr-2" />
           <span>Personal details</span>
         </div>
-        <div className="text-purple-500 text-sm">Add more accounts</div>
+        <div className="text-purple-500 text-sm cursor-pointer" onClick={openAddAccountDialog}>Add more accounts</div>
       </div>
 
-   
       <div className="bg-gray-800 rounded-lg p-4 mb-4">
-        <div className="flex items-center">
+        <div className="flex items-center cursor-pointer" onClick={openAccountsDialog}>
           <Users className="w-5 h-5 mr-2" />
           <span>Accounts</span>
         </div>
@@ -210,6 +249,8 @@ const Settings1 = () => {
         onClose={closeArchivedPostsDialog}
         archivedPosts={archivedPosts}
       />
+      <AddAccountDialog isOpen={isAddAccountDialogOpen} onClose={closeAddAccountDialog} onAccountAdded={handleAccountAdded} /> {/* Add AddAccountDialog */}
+      <AccountsDialog isOpen={isAccountsDialogOpen} onClose={closeAccountsDialog} accounts={accounts} onAccountClick={handleAccountClick} /> {/* Add AccountsDialog */}
     </div>
   );
 };

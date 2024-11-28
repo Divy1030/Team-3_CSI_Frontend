@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Search, MapPin, Bell, ChevronDown, Map } from 'lucide-react';
+import { Search, MapPin, Bell, ChevronDown, Menu, X, User, LogOut } from 'lucide-react';
 import { clearAuthUser } from '@/redux/authSlice';
 import { Button } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import CustomModal from './CustomModal';
 import NotificationsPanel from './NotificationsPanel';
 import axios from 'axios';
@@ -19,6 +18,7 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const logoutHandler = async () => {
     try {
@@ -94,7 +94,7 @@ const Navbar = () => {
   return (
     <div className='fixed top-0 z-10 left-0 w-full bg-black text-white p-4 flex items-center justify-between' style={{ height: '84px' }}>
       <h1 className='font-bold text-5xl text-purple-400'>hola'</h1>
-      <div className='flex-1 flex justify-center'>
+      <div className='hidden md:flex flex-1 justify-center'>
         <div className='relative flex items-center w-1/2'>
           <form onSubmit={handleSearch} className="w-full relative">
             <input
@@ -121,7 +121,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      <div className='flex items-center space-x-4'>
+      <div className='hidden md:flex items-center space-x-4'>
         <Button size='icon' className="relative text-white bg-transparent" onClick={() => setShowNotifications(true)}>
           <Bell className="text-white" />
           {likeNotification.length > 0 && (
@@ -166,6 +166,54 @@ const Navbar = () => {
           )}
         </div>
       </div>
+      <div className='md:hidden flex items-center'>
+        <button onClick={() => setMenuOpen(!menuOpen)} className="text-white">
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+      {menuOpen && (
+        <div className='absolute top-16 left-0 w-full bg-black text-white p-4 flex flex-col space-y-4 z-20'>
+          <form onSubmit={handleSearch} className="w-full relative">
+            <input
+              type="text"
+              placeholder="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#2c2c2e] text-[#cab3fe] rounded-3xl border-[#cab3fe] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-[#cab3fe] p-2 pl-10"
+            />
+            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-[#cab3fe]' />
+          </form>
+          {searchResults.length > 0 && (
+            <div className='absolute top-12 left-0 w-full bg-white text-black rounded-lg shadow-lg z-10'>
+              {searchResults.map(result => (
+                <div
+                  key={result.id}
+                  className='p-2 cursor-pointer hover:bg-gray-200'
+                  onClick={() => handleUserClick(result)}
+                >
+                  {result.username}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className='flex items-center cursor-pointer' onClick={() => sidebarHandler('Notifications')}>
+            <Bell className="text-white" />
+            <span className='ml-2'>Notifications</span>
+          </div>
+          <div className='flex items-center cursor-pointer' onClick={() => sidebarHandler('Map')}>
+            <MapPin className="text-white" />
+            <span className='ml-2'>Map</span>
+          </div>
+          <div className='flex items-center cursor-pointer' onClick={() => sidebarHandler('Profile')}>
+            <User className="text-white" />
+            <span className='ml-2'>Profile</span>
+          </div>
+          <div className='flex items-center cursor-pointer' onClick={() => sidebarHandler('Logout')}>
+            <LogOut className="text-white" />
+            <span className='ml-2'>Logout</span>
+          </div>
+        </div>
+      )}
       <CustomModal isOpen={showNotifications} onClose={() => setShowNotifications(false)}>
         <NotificationsPanel onClose={() => setShowNotifications(false)} />
       </CustomModal>

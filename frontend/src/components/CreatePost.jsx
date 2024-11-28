@@ -119,7 +119,7 @@ const CreatePost = ({ open, setOpen, addPost, fetchAllPost }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent onInteractOutside={() => setOpen(false)} className="flex flex-col items-center justify-start max-h-[85vh] overflow-y-hidden bg-[#343434] text-white rounded-2xl w-full md:w-3/4 lg:w-2/3">
+      <DialogContent onInteractOutside={() => setOpen(false)} className="flex flex-col items-center justify-start max-h-[85vh] overflow-y-hidden bg-[#343434] text-white rounded-2xl w-80 md:w-2/4 lg:w-2/3 mx-1 sm:mx-auto sm:max-w-md">
         <DialogHeader className='text-center font-semibold text-2xl mb-4 text-[#cab2ff] border-none'>Create New Post</DialogHeader>
         {step === 1 && (
           <>
