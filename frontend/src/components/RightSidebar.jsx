@@ -11,6 +11,7 @@ const RightSidebar = () => {
   const location = useLocation(); 
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 770);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -65,6 +66,8 @@ const RightSidebar = () => {
     }
   };
 
+  const displayedUsers = showAll ? suggestedUsers : suggestedUsers.slice(0, 7);
+
   return (
     <div className='w-96 my-10 pr-4'>
       {location.pathname !== '/profile' && (
@@ -78,10 +81,18 @@ const RightSidebar = () => {
       <div className='mt-4'>
         <h3 className='text-lg font-semibold text-white mb-2'>Add Friends</h3>
         <div className={`flex ${isMobile ? 'overflow-x-auto space-x-4' : 'flex-col space-y-4'}`}>
-          {suggestedUsers.map(user => (
+          {displayedUsers.map(user => (
             <ProfileCard key={user.id} user={user} handleFollow={handleFollow} isMobile={isMobile} />
           ))}
         </div>
+        {!showAll && suggestedUsers.length > 7 && (
+          <Button
+            className='mt-4 w-full bg-[#cab2ff] text-black text-sm rounded-lg hover:bg-purple-700 transition duration-200'
+            onClick={() => setShowAll(true)}
+          >
+            See More
+          </Button>
+        )}
       </div>
     </div>
   );
