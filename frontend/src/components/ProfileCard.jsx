@@ -16,10 +16,10 @@ const ProfileCard = ({ user, handleFollow, isMobile }) => {
         <span className='text-white text-sm'>{user.username}</span>
       </div>
       <Button
-        className='bg-[#baacf3] text-white px-2 py-1 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center'
+        className='text-[#baacf3] px-2 py-1 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center'
         onClick={() => handleFollow(user.id)}
       >
-        <FaUserPlus className={isMobile ? 'mr-1' : ''} />
+        <FaUserPlus className='text-[#baacf3] mr-1' />
         {isMobile && ' Follow'}
       </Button>
     </div>
