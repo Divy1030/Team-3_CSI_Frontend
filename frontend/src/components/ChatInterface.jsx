@@ -39,7 +39,7 @@ const ChatInterface = ({ messages, sendMessage, setMessage, message }) => {
         <Avatar className="w-12 h-12 mr-4">
           <img src="/api/placeholder/32/32" alt="User avatar" className="rounded-full" />
         </Avatar>
-        <div>
+        <div className="hidden sm:block">
           <h2 className="text-lg font-semibold text-white">Richard Wright</h2>
           <p className="text-sm text-gray-400">Last seen recently</p>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import Post from './Post';
@@ -6,7 +6,7 @@ import Post from './Post';
 const ArchivedPostsDialog = ({ isOpen, onClose, archivedPosts }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-2xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none">
+      <DialogContent className="w-full max-w-2xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none custom-dialog-content mt-12">
         <div className="flex items-center p-4 border-b border-gray-700">
           <button className="text-gray-400 hover:text-white mr-2" onClick={onClose}>
             <ArrowLeft size={24} />

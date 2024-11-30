@@ -85,11 +85,11 @@ const ExploreContent = () => {
 
   return (
     <div className="bg-[#2b2b2b] text-white p-4 rounded-lg shadow-md w-full">
-      <div className="flex justify-center space-x-4 mb-4">
+      <div className="flex flex-wrap justify-center space-x-4 mb-4">
         {['Top', 'Accounts', 'Tags', 'Community'].map(option => (
           <button
             key={option}
-            className={`px-4 py-2 rounded-3xl ${selectedOption === option ? 'bg-[#9384c9] text-white' : 'bg-white text-black'}`}
+            className={`px-2 py-1 text-sm sm:text-base rounded-3xl mb-2 ${selectedOption === option ? 'bg-[#9384c9] text-white' : 'bg-white text-black'}`}
             onClick={() => {
               setSelectedOption(option);
               if (option === 'Accounts') {

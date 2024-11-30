@@ -251,7 +251,7 @@ const UserProfile = () => {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Activity</h3>
           <span className="text-sm text-gray-400">{followers.length} Followers</span>
-          <button className="bg-purple-500 text-white px-4 py-2 rounded-lg" onClick={() => setOpen(true)}>Create Post</button>
+          <button className="bg-[#baacf3] text-black px-4 py-2 rounded-lg" onClick={() => setOpen(true)}>Create Post</button>
         </div>
         <div className="flex justify-between items-center mt-4 space-x-4 border-t border-[#a698d7] pt-2">
           {activityOptions.map(option => (
