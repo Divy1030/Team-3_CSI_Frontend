@@ -79,6 +79,24 @@ const Settings1 = () => {
     closeAccountsDialog();
   };
 
+  const handleLogout = () => {
+    // Clear tokens and user data from local storage
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    dispatch(setAuthUser(null));
+    toast.success("Logged out successfully!");
+  };
+
+  const handleLogoutAllAccounts = () => {
+    // Clear all accounts and tokens from local storage
+    localStorage.removeItem('accounts');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setAccounts([]);
+    dispatch(setAuthUser(null));
+    toast.success("Logged out from all accounts successfully!");
+  };
+
   const [savedPosts, setSavedPosts] = useState([
     {
       id: 1,
@@ -166,7 +184,7 @@ const Settings1 = () => {
   ]);
 
   return (
-    <div className="bg-black text-gray-100 p-4 w-full max-w-3xl mx-auto h-full overflow-y-auto">
+    <div className="bg-black text-gray-100 p-4 w-full max-w-3xl mx-auto h-full overflow-y-auto pb-32">
       <div className="text-lg mb-4">Settings</div>
       
       <div className="bg-gray-800 rounded-lg p-4 mb-4">
@@ -230,8 +248,8 @@ const Settings1 = () => {
       </div>
       <div className="border-t border-gray-700 pt-4">
         <div className="text-sm text-gray-400 mb-2">Add account</div>
-        <div className="text-red-500 mb-2">Log out</div>
-        <div className="text-red-500">Log out all accounts</div>
+        <div className="text-red-500 mb-2 cursor-pointer" onClick={handleLogout}>Log out</div>
+        <div className="text-red-500 cursor-pointer" onClick={handleLogoutAllAccounts}>Log out all accounts</div>
       </div>
 
       <PasswordAndSecurityDialog isOpen={isPasswordDialogOpen} onClose={closePasswordDialog} />

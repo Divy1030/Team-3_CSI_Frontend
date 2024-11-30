@@ -48,7 +48,7 @@ const UserSearchProfile = () => {
             </div>
           </div>
         </div>
-        <div className='w-full md:w-1/4 lg:w-1/5 flex-shrink-0 mt-10 md:mt-5 mr-24 sticky top-16 right-sidebar'>
+        <div className='w-full md:w-1/4 xl:w-1/5 flex-shrink-0 mt-10 md:mt-5 mr-24 sticky top-16 right-sidebar'>
           <RightSidebar />
         </div>
       </div>

@@ -16,7 +16,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         try {
             setLoading(true);
-            const response = await axios.post('http://hola-project.onrender.com/api/auth/forgot-password/', { email });
+            const response = await axios.post('http://hola-project.onrender.com/api/auth/forgot-password', { email });
             toast.success(response.data.message);
             navigate('/verify-otp', { state: { email } });
         } catch (error) {

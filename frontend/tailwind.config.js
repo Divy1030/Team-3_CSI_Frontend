@@ -7,39 +7,22 @@ module.exports = {
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
   ],
-  prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
+      // screens: {
+      //   'lg-custom': '1100px', // Custom breakpoint for 1100px
+      // },
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+        text: {
+          '0%': { width: '0%', color: 'white' },
+          '50%': { width: '100%', color: '#cab3fe' },
+          '100%': { width: '0%', color: 'white' },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      colors: {
-        'grey-gradient-start': '#403e40', // Light grey
-        'grey-gradient-end': '#252525',   // Dark grey
+        text: 'text 2s linear infinite',
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-  colors: {
-    myCustomColor: '#f00', // Example: Red
-    myOtherColor: '#0f0', // Example: Green
-  },
+  plugins: [],
 }
