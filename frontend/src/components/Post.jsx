@@ -9,7 +9,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-const Post = ({ post, removePost, fetchAllPosts }) => {
+const Post = ({ post, fetchAllPosts }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
     const [showComments, setShowComments] = useState(false); 
@@ -54,11 +54,12 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                 }
             });
 
+            console.log('Like/Unlike API Response:', res.data); // Log the response from the API
+
             if (res.status === 201 || res.status === 204) {
                 setLiked(!liked);
                 setPostLike(liked ? postLike - 1 : postLike + 1);
                 toast.success(res.data.message || (liked ? "Post unliked successfully!" : "Post liked successfully!"));
-                fetchAllPosts(); // Fetch the latest posts
             } else {
                 toast.error(res.data.message || "An error occurred while liking/disliking the post.");
             }
@@ -74,20 +75,27 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
             toast.error("User is not authenticated.");
             return;
         }
-
+    
         try {
             const res = await axios.delete(`${BASE_URL}/api/posts/${post.id}/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log(res.data);
-            removePost(post.id);
-            toast.success("Post deleted successfully!");
-            fetchAllPosts(); // Fetch the latest posts
+            console.log('Delete Post API Response:', res.data); // Log the response from the API
+            if (res.data.message === "Post deleted successfully") {
+                toast.success("Post deleted successfully!");
+                fetchAllPosts(); // Fetch the latest posts
+            } else {
+                toast.error("An error occurred while deleting the post.");
+            }
         } catch (error) {
-            console.error(error);
-            toast.error("An error occurred while deleting the post.");
+            console.error('Delete Post Error:', error);
+            if (error.response && error.response.status === 403) {
+                toast.error("You do not have permission to delete this post.");
+            } else {
+                toast.error("An error occurred while deleting the post.");
+            }
         }
     }
 
@@ -105,15 +113,54 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             });
-            console.log(res.data);
+            console.log('Add Comment API Response:', res.data); // Log the response from the API
             setComments([...comments, res.data]);
             setComment(comment + 1);
             setText("");
             toast.success("Comment added successfully!");
-            fetchAllPosts(); // Fetch the latest posts
         } catch (error) {
             console.error(error);
             toast.error("An error occurred while adding the comment.");
+        }
+    }
+
+    const likeOrUnlikeCommentHandler = async (commentId, isLiked) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            toast.error("User is not authenticated.");
+            return;
+        }
+
+        try {
+            const url = isLiked
+                ? `${BASE_URL}/api/posts/comments/${commentId}/unlike/`
+                : `${BASE_URL}/api/posts/comments/${commentId}/like/`;
+
+            const method = isLiked ? 'delete' : 'post';
+
+            const res = await axios({
+                method: method,
+                url: url,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log('Like/Unlike Comment API Response:', res.data); // Log the response from the API
+
+            if (res.status === 200 || res.data.detail) {
+                toast.success(res.data.detail);
+                // Update the comment state if needed
+            } else {
+                toast.error(res.data.detail || "An error occurred while processing the request.");
+            }
+        } catch (error) {
+            console.error('Like/Unlike Comment Error:', error);
+            if (error.response && error.response.status === 400) {
+                toast.error("Bad request. Please check the request parameters.");
+            } else {
+                toast.error("An error occurred while processing the request.");
+            }
         }
     }
 
@@ -141,7 +188,9 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                     <AvatarImage src={post.created_by?.profilePicture ? `${BASE_URL}${post.created_by.profilePicture}` : ''} alt={post.created_by?.username} />
                     <AvatarFallback>{post.created_by?.username?.[0]}</AvatarFallback>
                 </Avatar>
-                <span className='font-bold text-sm'>{post.created_by?.username}</span>
+                <div className='flex flex-col'>
+                    <span className='font-bold text-sm'>{post.created_by}</span>
+                </div>
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button className='ml-auto p-1 bg-transparent text-white'> 
@@ -191,7 +240,7 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                 </div>
                 <div className='flex items-center'>
                     <button onClick={sharePostHandler} className='mr-2 text-white'> 
-                        <FaPaperPlane size={20} />
+                        <FaPaperPlane />
                     </button>
                     <span>{shares} shares</span>
                 </div>
@@ -210,6 +259,16 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                         <Button onClick={addCommentHandler} className='ml-2 bg-[#cab2ff] hover:bg-[#a655d1] text-black'>
                             <FaPaperPlane />
                         </Button>
+                    </div>
+                    <div className='mt-4'>
+                        {comments.map(comment => (
+                            <div key={comment.id} className='flex items-center mb-2'>
+                                <span className='mr-2'>{comment.content}</span>
+                                <button onClick={() => likeOrUnlikeCommentHandler(comment.id, comment.is_liked)} className='text-white'>
+                                    {comment.is_liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}

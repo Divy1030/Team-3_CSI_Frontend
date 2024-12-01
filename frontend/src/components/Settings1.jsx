@@ -9,6 +9,8 @@ import SavedPostsDialog from './SavedPostsDialog';
 import ArchivedPostsDialog from './ArchivedPostsDialog'; 
 import AddAccountDialog from './AddAccountDialog'; // Import the AddAccountDialog component
 import AccountsDialog from './AccountsDialog'; // Import the AccountsDialog component
+import HelpDialog from './HelpDialog'; // Import the HelpDialog component
+import LanguageDialog from './LanguageDialog'; // Import the LanguageDialog component
 import { useDispatch } from 'react-redux';
 import { setAuthUser } from '@/redux/authSlice';
 import { toast } from 'sonner';
@@ -23,6 +25,8 @@ const Settings1 = () => {
   const [isArchivedPostsDialogOpen, setIsArchivedPostsDialogOpen] = useState(false); 
   const [isAddAccountDialogOpen, setIsAddAccountDialogOpen] = useState(false); // State for AddAccountDialog
   const [isAccountsDialogOpen, setIsAccountsDialogOpen] = useState(false); // State for AccountsDialog
+  const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false); // State for HelpDialog
+  const [isLanguageDialogOpen, setIsLanguageDialogOpen] = useState(false); // State for LanguageDialog
   const [accounts, setAccounts] = useState([]); // State to store added accounts
   const dispatch = useDispatch();
 
@@ -58,6 +62,19 @@ const Settings1 = () => {
 
   const openAccountsDialog = () => setIsAccountsDialogOpen(true); // Open AccountsDialog
   const closeAccountsDialog = () => setIsAccountsDialogOpen(false); // Close AccountsDialog
+
+  const openHelpDialog = () => setIsHelpDialogOpen(true); // Open HelpDialog
+  const closeHelpDialog = () => setIsHelpDialogOpen(false); // Close HelpDialog
+
+  const openLanguageDialog = () => setIsLanguageDialogOpen(true); // Open LanguageDialog
+  const closeLanguageDialog = () => setIsLanguageDialogOpen(false); // Close LanguageDialog
+
+  const handleLanguageChange = (language) => {
+    // Save the selected language to local storage
+    localStorage.setItem('language', language);
+    // Reload the page to apply the language change
+    window.location.reload();
+  };
 
   const handleAccountAdded = (account) => {
     setAccounts([...accounts, account]);
@@ -236,13 +253,13 @@ const Settings1 = () => {
             <Shield className="w-5 h-5 mr-2" />
             <span>Account privacy</span>
           </div>
-          <div className="flex items-center">
-            <Globe className="w-5 h-5 mr-2" />
-            <span>Language</span>
-          </div>
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={openHelpDialog}>
             <HelpCircle className="w-5 h-5 mr-2" />
             <span>Help</span>
+          </div>
+          <div className="flex items-center cursor-pointer" onClick={openLanguageDialog}>
+            <Globe className="w-5 h-5 mr-2" />
+            <span>Language</span>
           </div>
         </div>
       </div>
@@ -269,6 +286,8 @@ const Settings1 = () => {
       />
       <AddAccountDialog isOpen={isAddAccountDialogOpen} onClose={closeAddAccountDialog} onAccountAdded={handleAccountAdded} /> {/* Add AddAccountDialog */}
       <AccountsDialog isOpen={isAccountsDialogOpen} onClose={closeAccountsDialog} accounts={accounts} onAccountClick={handleAccountClick} /> {/* Add AccountsDialog */}
+      <HelpDialog isOpen={isHelpDialogOpen} onClose={closeHelpDialog} /> {/* Add HelpDialog */}
+      <LanguageDialog isOpen={isLanguageDialogOpen} onClose={closeLanguageDialog} onLanguageChange={handleLanguageChange} /> {/* Add LanguageDialog */}
     </div>
   );
 };
