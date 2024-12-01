@@ -90,6 +90,7 @@ const CreatePost = ({ open, setOpen, addPost, fetchAllPost }) => {
 
       if (res.status === 201) {
         const newPost = res.data;
+        console.log('create post api rsponse',res.data)
         addPost(newPost);
         toast.success("Post created successfully!");
         setOpen(false);
@@ -171,7 +172,7 @@ const CreatePost = ({ open, setOpen, addPost, fetchAllPost }) => {
               />
             </div>
             <div className="flex items-center justify-between border border-[#b1a3e5] rounded-md p-2">
-              <span className="font-medium text-gray-300">Private account</span>
+              <span className="font-medium text-gray-300">Private post</span>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"

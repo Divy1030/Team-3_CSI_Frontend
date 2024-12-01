@@ -8,6 +8,7 @@ import Comment from './Comment';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { setPosts } from '@/redux/postSlice';
+import DragCloseDrawer from './DragCloseDrawer';
 
 const CommentDialog = ({ open, setOpen, postId }) => {
   const [text, setText] = useState("");
@@ -199,65 +200,116 @@ const CommentDialog = ({ open, setOpen, postId }) => {
     }
   };
 
+  const isMobile = window.innerWidth <= 768;
+
   return (
-    <Dialog open={open}>
-      <DialogContent onInteractOutside={() => setOpen(false)} className="max-w-5xl p-0 flex flex-col bg-[#252525] text-white border-none">
-        <DialogTitle className="sr-only">Comments</DialogTitle>
-        <div className='flex items-center justify-between p-4 bg-[#101010]'>
-          <h2 className='text-lg font-bold'>Comment</h2>
-          <button onClick={() => setOpen(false)} className='text-white'>
-            <X size={24} />
-          </button>
-        </div>
-        <div className='flex flex-1 flex-col md:flex-row'>
-          <div className='w-full md:w-1/2 border-none hidden md:flex'>
-            {post && post.media && (
-              <img
-                src={`https://hola-project.onrender.com${post.media}`}
-                alt="post_img"
-                className='w-full h-64 md:h-[500px] object-cover rounded-l-lg'
-              />
-            )}
-          </div>
-          <div className='w-full md:w-1/2 flex flex-col justify-between border-none'>
-            <hr className='hidden md:block' />
-            <div className='flex-1 overflow-y-auto max-h-96 p-4 pb-20 hide-scrollbar border-none'>
-              {
-                comments.map((comment) => (
-                  <Comment key={comment.id} comment={comment} postId={postId} addReply={addReply} deleteComment={deleteComment} toggleLikeComment={toggleLikeComment} />
-                ))
-              }
-            </div>
-            <div className='p-4 bg-[#101010] fixed bottom-0 left-0 w-full md:relative md:bottom-auto md:left-auto'>
-              <div className='flex items-center gap-2'>
-                <div className='flex gap-3 items-center'>
-                  <Link to={`/profile/${post?.created_by?._id}`}>
-                    <Avatar>
-                      <AvatarImage src={`https://hola-project.onrender.com${userProfile?.profile_photo}`} />
-                      <AvatarFallback>{post?.created_by?.username?.[0]}</AvatarFallback>
-                    </Avatar>
-                  </Link>
-                  <div>
-                    <Link to={`/profile/${post?.created_by?._id}`} className='font-semibold text-xs'>{post?.created_by?.username}</Link>
-                  </div>
-                </div>
-                <input
-                  type="text"
-                  value={text}
-                  onChange={changeEventHandler}
-                  onKeyPress={handleKeyPress}
-                  placeholder='Add a comment...'
-                  className='flex-grow outline-none border-none text-sm bg-[#101010] text-white p-2 rounded'
+    <>
+      {isMobile ? (
+        <DragCloseDrawer open={open} setOpen={setOpen}>
+          <div className='flex flex-1 flex-col md:flex-row'>
+            <div className='w-full md:w-1/2 border-none hidden md:flex'>
+              {post && post.media && (
+                <img
+                  src={`https://hola-project.onrender.com${post.media}`}
+                  alt="post_img"
+                  className='w-full h-64 md:h-[500px] object-cover rounded-l-lg'
                 />
-                <Mic className='text-white cursor-pointer' size={20} />
-                <Image className='text-white cursor-pointer' size={20} />
+              )}
+            </div>
+            <div className='w-full md:w-1/2 flex flex-col justify-between border-none'>
+              <hr className='hidden md:block' />
+              <div className='flex-1 overflow-y-auto max-h-96 p-4 pb-20 hide-scrollbar border-none'>
+                {comments.map((comment) => (
+                  <Comment key={comment.id} comment={comment} postId={postId} addReply={addReply} deleteComment={deleteComment} toggleLikeComment={toggleLikeComment} />
+                ))}
+              </div>
+              <div className='p-4 bg-[#101010] fixed bottom-0 left-0 w-full md:relative md:bottom-auto md:left-auto'>
+                <div className='flex items-center gap-2'>
+                  <div className='flex gap-3 items-center'>
+                    <Link to={`/profile/${post?.created_by?._id}`}>
+                      <Avatar>
+                        <AvatarImage src={`https://hola-project.onrender.com${userProfile?.profile_photo}`} />
+                        <AvatarFallback>{post?.created_by?.username?.[0]}</AvatarFallback>
+                      </Avatar>
+                    </Link>
+                    <div>
+                      <Link to={`/profile/${post?.created_by?._id}`} className='font-semibold text-xs'>{post?.created_by?.username}</Link>
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    value={text}
+                    onChange={changeEventHandler}
+                    onKeyPress={handleKeyPress}
+                    placeholder='Add a comment...'
+                    className='flex-grow outline-none border-none text-sm bg-[#101010] text-white p-2 rounded'
+                  />
+                  <Mic className='text-white cursor-pointer' size={20} />
+                  <Image className='text-white cursor-pointer' size={20} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
+        </DragCloseDrawer>
+      ) : (
+        <Dialog open={open}>
+          <DialogContent onInteractOutside={() => setOpen(false)} className="max-w-5xl p-0 flex flex-col bg-[#252525] text-white border-none">
+            <DialogTitle className="sr-only">Comments</DialogTitle>
+            <div className='flex items-center justify-between p-4 bg-[#101010]'>
+              <h2 className='text-lg font-bold'>Comment</h2>
+              <button onClick={() => setOpen(false)} className='text-white'>
+                <X size={24} />
+              </button>
+            </div>
+            <div className='flex flex-1 flex-col md:flex-row'>
+              <div className='w-full md:w-1/2 border-none hidden md:flex'>
+                {post && post.media && (
+                  <img
+                    src={`https://hola-project.onrender.com${post.media}`}
+                    alt="post_img"
+                    className='w-full h-64 md:h-[500px] object-cover rounded-l-lg'
+                  />
+                )}
+              </div>
+              <div className='w-full md:w-1/2 flex flex-col justify-between border-none'>
+                <hr className='hidden md:block' />
+                <div className='flex-1 overflow-y-auto max-h-96 p-4 pb-20 hide-scrollbar border-none'>
+                  {comments.map((comment) => (
+                    <Comment key={comment.id} comment={comment} postId={postId} addReply={addReply} deleteComment={deleteComment} toggleLikeComment={toggleLikeComment} />
+                  ))}
+                </div>
+                <div className='p-4 bg-[#101010] fixed bottom-0 left-0 w-full md:relative md:bottom-auto md:left-auto'>
+                  <div className='flex items-center gap-2'>
+                    <div className='flex gap-3 items-center'>
+                      <Link to={`/profile/${post?.created_by?._id}`}>
+                        <Avatar>
+                          <AvatarImage src={`https://hola-project.onrender.com${userProfile?.profile_photo}`} />
+                          <AvatarFallback>{post?.created_by?.username?.[0]}</AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      <div>
+                        <Link to={`/profile/${post?.created_by?._id}`} className='font-semibold text-xs'>{post?.created_by?.username}</Link>
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      value={text}
+                      onChange={changeEventHandler}
+                      onKeyPress={handleKeyPress}
+                      placeholder='Add a comment...'
+                      className='flex-grow outline-none border-none text-sm bg-[#101010] text-white p-2 rounded'
+                    />
+                    <Mic className='text-white cursor-pointer' size={20} />
+                    <Image className='text-white cursor-pointer' size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
+  );
+};
 
 export default CommentDialog;

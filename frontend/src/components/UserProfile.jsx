@@ -30,6 +30,7 @@ const UserProfile = () => {
   const [backgroundPhotoLoading, setBackgroundPhotoLoading] = useState(false); // State for background photo loading
 
   const BASE_URL = 'https://hola-project.onrender.com';
+  const userId = localStorage.getItem('userId'); // Get the user ID from local storage
 
   useEffect(() => {
     fetchProfile();
@@ -39,18 +40,20 @@ const UserProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedOption === 'Posts') {
-      fetchPosts();
-    } else if (selectedOption === 'Comments') {
-      fetchComments();
-    } else if (selectedOption === 'Media') {
-      fetchMedia();
-    } else if (selectedOption === 'Followers') {
-      fetchFollowers();
-    } else if (selectedOption === 'Following') {
-      fetchFollowing();
+    if (profile.id) {
+      if (selectedOption === 'Posts') {
+        fetchPosts();
+      } else if (selectedOption === 'Comments') {
+        fetchComments();
+      } else if (selectedOption === 'Media') {
+        fetchMedia();
+      } else if (selectedOption === 'Followers') {
+        fetchFollowers();
+      } else if (selectedOption === 'Following') {
+        fetchFollowing();
+      }
     }
-  }, [selectedOption]);
+  }, [selectedOption, profile.id]);
 
   const fetchProfile = async () => {
     try {
@@ -62,7 +65,7 @@ const UserProfile = () => {
       console.log(res.data); 
       setProfile(res.data);
       setBio(res.data.bio || '');
-      fetchFollowers(); // Fetch followers to get the actual number of followers
+      fetchFollowersCount(); // Fetch followers count to get the actual number of followers
     } catch (error) {
       console.error(error);
       toast.error("An error occurred while fetching profile.");
@@ -124,17 +127,37 @@ const UserProfile = () => {
   const fetchFollowers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/api/accounts/followers/${profile.id}/`, {
+      const res = await axios.get(`${BASE_URL}/api/accounts/followers/26/`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
-      setFollowers(res.data);
+      console.log('Followers API Response:', res.data); // Log the response from the API
+      const filteredFollowers = res.data.filter(follower => follower.id !== userId); // Filter out the user's own profile
+      setFollowers(filteredFollowers);
       setLoading(false);
     } catch (error) {
       console.error(error);
       toast.error("An error occurred while fetching followers.");
       setLoading(false);
+    }
+  };
+
+  const fetchFollowersCount = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/accounts/followers/26/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+      const filteredFollowers = res.data.filter(follower => follower.id !== userId); // Filter out the user's own profile
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        num_followers: filteredFollowers.length
+      }));
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while fetching followers count.");
     }
   };
 
@@ -250,7 +273,7 @@ const UserProfile = () => {
       <div className="bg-[#101011] text-white p-4 border-2 border-[#a698d7] border-t-0 rounded-t-lg mt-10">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Activity</h3>
-          <span className="text-sm text-gray-400">{followers.length} Followers</span>
+          <span className="text-sm text-gray-400">{profile.num_followers} Followers</span>
           <button className="bg-[#baacf3] text-black px-4 py-2 rounded-lg" onClick={() => setOpen(true)}>Create Post</button>
         </div>
         <div className="flex justify-between items-center mt-4 space-x-4 border-t border-[#a698d7] pt-2">

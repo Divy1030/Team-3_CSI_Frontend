@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { CheckIcon, SearchIcon } from 'lucide-react'; // Import the CheckIcon and SearchIcon
+import { CheckIcon, SearchIcon } from 'lucide-react';
+import axios from 'axios';
 
 const CloseFriendsDialog = ({ isOpen, onClose }) => {
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [friends, setFriends] = useState([]);
 
-  const friends = [
-    { id: 1, name: 'John Doe', image: 'user-profile-image-url' },
-    { id: 2, name: 'Jane Smith', image: 'user-profile-image-url' },
-    
-  ];
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const followersResponse = await axios.get('https://hola-project.onrender.com/api/accounts/followers/26/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
+        const followingResponse = await axios.get('https://hola-project.onrender.com/api/accounts/following/26/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
+        const followers = followersResponse.data || [];
+        const following = followingResponse.data || [];
+        setFriends([...followers, ...following]);
+        console.log('Friends:', [...followers, ...following]); // Log the friends array to verify its structure
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+      }
+    };
+
+    fetchFriends();
+  }, []);
 
   const toggleFriendSelection = (friendId) => {
     setSelectedFriends((prevSelected) =>
@@ -26,13 +47,13 @@ const CloseFriendsDialog = ({ isOpen, onClose }) => {
   };
 
   const filteredFriends = friends.filter((friend) =>
-    friend.name.toLowerCase().includes(searchTerm.toLowerCase())
+    friend.username && friend.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-      <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#2a2a2b] text-white p-4 w-full max-w-md mx-auto h-auto overflow-y-auto rounded-lg">
+      <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#2a2a2b] text-white p-4 w-full max-w-md mx-auto h-auto overflow-y-auto rounded-lg custom-scrollbar">
         <div className="relative">
           <Dialog.Close asChild>
             <button className="absolute top-2 right-2 text-white">
@@ -61,8 +82,8 @@ const CloseFriendsDialog = ({ isOpen, onClose }) => {
               {filteredFriends.map((friend) => (
                 <div key={friend.id} className="flex items-center justify-between mb-2">
                   <div className="flex items-center">
-                    <img src={friend.image} alt={friend.name} className="w-10 h-10 rounded-full mr-3" />
-                    <span>{friend.name}</span>
+                    <img src={friend.image} alt={friend.username} className="w-10 h-10 rounded-full mr-3" />
+                    <span>{friend.username}</span>
                   </div>
                   <button
                     onClick={() => toggleFriendSelection(friend.id)}
