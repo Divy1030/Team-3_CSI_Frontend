@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Link } from 'react-router-dom';
-import { X, Mic, Image, Heart } from 'lucide-react';
+import { X, Mic, Image, Heart, Send } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import Comment from './Comment';
 import axios from 'axios';
@@ -160,7 +160,10 @@ const CommentDialog = ({ open, setOpen, postId }) => {
 
       if (res.status === 200) {
         toast.success("Comment liked successfully!");
-        fetchComments();
+        // Update the comment state
+        setComments(comments.map(comment => 
+          comment.id === commentId ? { ...comment, is_liked: true, likes_count: (comment.likes_count || 0) + 1 } : comment
+        ));
       }
     } catch (error) {
       console.error(error);
@@ -184,7 +187,10 @@ const CommentDialog = ({ open, setOpen, postId }) => {
 
       if (res.status === 200) {
         toast.success("Comment unliked successfully!");
-        fetchComments();
+        // Update the comment state
+        setComments(comments.map(comment => 
+          comment.id === commentId ? { ...comment, is_liked: false, likes_count: (comment.likes_count || 1) - 1 } : comment
+        ));
       }
     } catch (error) {
       console.error(error);
@@ -246,6 +252,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
                   />
                   <Mic className='text-white cursor-pointer' size={20} />
                   <Image className='text-white cursor-pointer' size={20} />
+                  <Send onClick={sendMessageHandler} className='text-white cursor-pointer' size={20} />
                 </div>
               </div>
             </div>
@@ -301,6 +308,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
                     />
                     <Mic className='text-white cursor-pointer' size={20} />
                     <Image className='text-white cursor-pointer' size={20} />
+                    <Send onClick={sendMessageHandler} className='text-white cursor-pointer' size={20} />
                   </div>
                 </div>
               </div>

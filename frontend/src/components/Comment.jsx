@@ -169,9 +169,9 @@ const Comment = ({ comment, postId, addReply, deleteComment }) => {
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder='Add a reply...'
-            className='w-full outline-none border text-sm border-gray-300 p-2 rounded'
+            className='w-full outline-none border text-black border-gray-300 p-2 rounded'
           />
-          <Button disabled={!replyText.trim()} onClick={replyCommentHandler} variant="outline">Send</Button>
+          <Button disabled={!replyText.trim()} onClick={replyCommentHandler} variant="outline" className='text-black bg-[#baadf2]'>Send</Button>
         </div>
       )}
       {comment.replies && comment.replies.length > 0 && (

@@ -93,7 +93,7 @@ const Navbar = () => {
 
   return (
     <div className='fixed top-0 z-10 left-0 w-full bg-black text-white p-4 flex items-center justify-between' style={{ height: '84px' }}>
-      <h1 className='font-bold text-5xl text-purple-400'>hola'</h1>
+      <h1 className='font-bold text-5xl text-purple-400 cursor-pointer' onClick={() => navigate('/')}>hola'</h1>
       <div className='hidden md:flex flex-1 justify-center'>
         <div className='relative flex items-center w-1/2'>
           <form onSubmit={handleSearch} className="w-full relative">

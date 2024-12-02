@@ -8,18 +8,18 @@ const SavedPostsDialog = ({ isOpen, onClose, savedPosts }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-4xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none">
+      <DialogContent className="w-full max-w-4xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none mt-10">
         <div className="flex items-center justify-between p-4">
           <h2 className="text-xl font-bold">Saved</h2>
           <button className="text-white hover:text-white ml-2" onClick={onClose}>
             <ArrowLeft size={24} />
           </button>
         </div>
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-4 ">
           <p className="text-sm text-white">All posts</p>
-          <button className="text-white hover:text-white ml-2 md:hidden" onClick={onClose}>
+          {/* <button className="text-white hover:text-white ml-2 md:hidden" onClick={onClose}>
             <ArrowLeft size={24} />
-          </button>
+          </button> */}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4 max-h-[600px] overflow-y-auto scrollbar-hide">
           {savedPosts.map(post => (
