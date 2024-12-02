@@ -9,7 +9,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-const Post = ({ post, fetchAllPosts }) => {
+const Post = ({ post, removePost, fetchAllPosts }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
     const [showComments, setShowComments] = useState(false); 
@@ -124,7 +124,7 @@ const Post = ({ post, fetchAllPosts }) => {
         }
     }
 
-    const likeOrUnlikeCommentHandler = async (commentId, isLiked) => {
+    const likeCommentHandler = async (commentId) => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             toast.error("User is not authenticated.");
@@ -132,34 +132,68 @@ const Post = ({ post, fetchAllPosts }) => {
         }
 
         try {
-            const url = isLiked
-                ? `${BASE_URL}/api/posts/comments/${commentId}/unlike/`
-                : `${BASE_URL}/api/posts/comments/${commentId}/like/`;
+            const url = `${BASE_URL}/api/posts/comments/${commentId}/like/`;
 
-            const method = isLiked ? 'delete' : 'post';
-
-            const res = await axios({
-                method: method,
-                url: url,
+            const res = await axios.post(url, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            console.log('Like/Unlike Comment API Response:', res.data); // Log the response from the API
+            console.log('Like Comment API Response:', res.data); // Log the response from the API
 
-            if (res.status === 200 || res.data.detail) {
+            if (res.data.detail === "Comment liked successfully!") {
                 toast.success(res.data.detail);
-                // Update the comment state if needed
+                // Update the comment state
+                setComments(comments.map(comment => 
+                    comment.id === commentId ? { ...comment, is_liked: true, likes_count: (comment.likes_count || 0) + 1 } : comment
+                ));
             } else {
-                toast.error(res.data.detail || "An error occurred while processing the request.");
+                toast.error(res.data.detail || "An error occurred while liking the comment.");
             }
         } catch (error) {
-            console.error('Like/Unlike Comment Error:', error);
+            console.error('Like Comment Error:', error);
             if (error.response && error.response.status === 400) {
                 toast.error("Bad request. Please check the request parameters.");
             } else {
-                toast.error("An error occurred while processing the request.");
+                toast.error("An error occurred while liking the comment.");
+            }
+        }
+    }
+
+    const unlikeCommentHandler = async (commentId) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            toast.error("User is not authenticated.");
+            return;
+        }
+
+        try {
+            const url = `${BASE_URL}/api/posts/comments/${commentId}/unlike/`;
+
+            const res = await axios.delete(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log('Unlike Comment API Response:', res.data); // Log the response from the API
+
+            if (res.data.detail === "Comment unliked successfully!") {
+                toast.success(res.data.detail);
+                // Update the comment state
+                setComments(comments.map(comment => 
+                    comment.id === commentId ? { ...comment, is_liked: false, likes_count: (comment.likes_count || 1) - 1 } : comment
+                ));
+            } else {
+                toast.error(res.data.detail || "An error occurred while unliking the comment.");
+            }
+        } catch (error) {
+            console.error('Unlike Comment Error:', error);
+            if (error.response && error.response.status === 400) {
+                toast.error("Bad request. Please check the request parameters.");
+            } else {
+                toast.error("An error occurred while unliking the comment.");
             }
         }
     }
@@ -185,11 +219,11 @@ const Post = ({ post, fetchAllPosts }) => {
         <div className='bg-[#343434] p-3 rounded-xl shadow-md max-w-2xl border-2 border-[#cab3fe] mx-auto text-white'> {/* Change background and text color */}
             <div className='flex items-center mb-2'> 
                 <Avatar className='w-8 h-8 rounded-full mr-2'>
-                    <AvatarImage src={post.created_by?.profilePicture ? `${BASE_URL}${post.created_by.profilePicture}` : ''} alt={post.created_by?.username} />
+                    <AvatarImage src={post.created_by?.profilePicture} alt={post.created_by?.username} />
                     <AvatarFallback>{post.created_by?.username?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col'>
-                    <span className='font-bold text-sm'>{post.created_by}</span>
+                    <span className='font-bold text-sm'>{post.created_by?.username}</span>
                 </div>
                 <Popover>
                     <PopoverTrigger asChild>
@@ -222,7 +256,7 @@ const Post = ({ post, fetchAllPosts }) => {
             {post.media && (
                 <>
                     {console.log('Image URL:', post.media)} {/* Log the image URL */}
-                    <img src={post.media} alt={post.content} className='w-full mb-2 rounded-lg' />
+                    <img src={post.media} alt={post.content} className='w-[700px] h-[700px] object-cover mb-2 rounded-lg' />
                 </>
             )} 
             <div className='flex items-center mb-2'> {/* Align like, comment, and share in a line */}
@@ -264,9 +298,10 @@ const Post = ({ post, fetchAllPosts }) => {
                         {comments.map(comment => (
                             <div key={comment.id} className='flex items-center mb-2'>
                                 <span className='mr-2'>{comment.content}</span>
-                                <button onClick={() => likeOrUnlikeCommentHandler(comment.id, comment.is_liked)} className='text-white'>
+                                <button onClick={() => comment.is_liked ? unlikeCommentHandler(comment.id) : likeCommentHandler(comment.id)} className='text-white'>
                                     {comment.is_liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
                                 </button>
+                                <span className='ml-2'>{comment.likes_count || 0} likes</span>
                             </div>
                         ))}
                     </div>
