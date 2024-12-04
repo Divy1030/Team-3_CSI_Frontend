@@ -96,7 +96,7 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-10 rounded-3xl form-container">
-      <form onSubmit={loginHandler} className="w-full max-w-md space-y-4">
+      <form onSubmit={loginHandler} className="w-full max-w-md space-y-4 ">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold">
             <span className="text-purple-400">hola'</span>

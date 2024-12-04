@@ -32,11 +32,22 @@ const SearchDialog = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleUserClick = (user) => {
-    navigate(`/profile/${user.id}`, { state: { userProfile: user } });
-    setSearchTerm('');
-    setFilteredUsers([]);
-    onClose();
+  const handleUserClick = async (user) => {
+    try {
+      const response = await axios.get(`https://hola-project.onrender.com/api/accounts/profile/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+      console.log('User Profile API Response:', response.data); // Log the response from the API
+      navigate(`/profile/${user.id}`, { state: { userProfile: response.data } });
+      setSearchTerm('');
+      setFilteredUsers([]);
+      onClose();
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      toast.error("An error occurred while fetching the user profile.");
+    }
   };
 
   return (

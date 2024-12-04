@@ -291,7 +291,7 @@ const UserProfile = () => {
 
 
       {selectedOption === 'Posts' && (
-        <div className="bg-[#101011] text-white p-4 border-2 border-[#a698d7] border-t-0 rounded-t-lg mt-4 space-y-4">
+        <div className="bg-[#101011] text-white p-4 border-2 border-[#a698d7] border-t-0 rounded-t-lg mt-4 space-y-4 mb-5">
           {loading ? (
             <p>Loading...</p>
           ) : (

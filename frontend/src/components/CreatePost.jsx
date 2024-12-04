@@ -78,6 +78,7 @@ const CreatePost = ({ open, setOpen, addPost, fetchAllPost }) => {
     formData.append("content", content);
     formData.append("is_public", isPublic);
     formData.append("tags", tags.join(','));
+    console.log(formData);
     if (file) formData.append("media", file);
     try {
       setLoading(true);

@@ -117,7 +117,7 @@ const ExploreContent = () => {
       {selectedPost && (
         <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
           <DialogContent className="p-0 flex flex-col bg-transparent shadow-none border-none w-full h-full justify-center items-center">
-            <Post post={selectedPost} removePost={() => setSelectedPost(null)} />
+            <Post post={selectedPost} removePost={() => setSelectedPost(null)} isExplorePage={true} />
           </DialogContent>
         </Dialog>
       )}
