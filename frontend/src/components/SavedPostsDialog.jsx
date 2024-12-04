@@ -8,7 +8,7 @@ const SavedPostsDialog = ({ isOpen, onClose, savedPosts }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-4xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none mt-10">
+      <DialogContent className="w-full max-w-4xl bg-[#2b2b2b] text-white rounded-xl shadow-lg border-none mt-10 mb-5">
         <div className="flex items-center justify-between p-4">
           <h2 className="text-xl font-bold">Saved</h2>
           <button className="text-white hover:text-white ml-2" onClick={onClose}>

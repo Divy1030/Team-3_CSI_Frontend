@@ -9,7 +9,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-const Post = ({ post, removePost, fetchAllPosts }) => {
+const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
     const [showComments, setShowComments] = useState(false); 
@@ -223,7 +223,7 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                     <AvatarFallback>{post.created_by?.username?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col'>
-                    <span className='font-bold text-sm'>{post.created_by?.username}</span>
+                    <span className='font-bold text-sm'>{post.created_by}</span>
                 </div>
                 <Popover>
                     <PopoverTrigger asChild>
@@ -245,9 +245,11 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
                             {/* <button onClick={hideOrReportHandler} className='p-2 text-white text-left'>
                                 Hide or Report
                             </button> */}
-                            <button onClick={deletePostHandler} className='p-2 text-white text-left'>
-                                Delete Post
-                            </button>
+                            {!isExplorePage && (
+                                <button onClick={deletePostHandler} className='p-2 text-white text-left'>
+                                    Delete Post
+                                </button>
+                            )}
                         </div>
                     </PopoverContent>
                 </Popover>
@@ -256,7 +258,7 @@ const Post = ({ post, removePost, fetchAllPosts }) => {
             {post.media && (
                 <>
                     {console.log('Image URL:', post.media)} {/* Log the image URL */}
-                    <img src={post.media} alt={post.content} className='w-[700px] h-[700px] object-cover mb-2 rounded-lg' />
+                    <img src={post.media} alt={post.content} className='w-full h-auto max-w-[600px] max-h-[600px] object-cover rounded-lg mx-auto' />
                 </>
             )} 
             <div className='flex items-center mb-2'> {/* Align like, comment, and share in a line */}
