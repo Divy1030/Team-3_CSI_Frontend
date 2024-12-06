@@ -258,27 +258,30 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
             {post.media && (
                 <>
                     {console.log('Image URL:', post.media)} {/* Log the image URL */}
-                    <img src={post.media} alt={post.content} className='w-full h-auto max-w-[600px] max-h-[600px] object-cover rounded-lg mx-auto' />
+                    <img src={post.media} alt={post.content} className='w-full h-auto max-w-[600px] max-h-[600px] object-cover rounded-lg mx-auto mb-4 sm:mb-2' /> {/* Add margin-bottom for small screens */}
                 </>
             )} 
-            <div className='flex items-center mb-2'> {/* Align like, comment, and share in a line */}
-                <div className='flex items-center mr-4'>
+            <div className='flex items-center mb-2 ml-5'> {/* Align like, comment, and share in a line */}
+                <div className='flex items-center mr-4 ml gap-1'>
                     <button onClick={likeOrDislikeHandler} className='mr-2 text-white'> 
                         {liked ? <FaHeart className='text-red-500' size={20} /> : <FaRegHeart size={20} />}
                     </button>
-                    <span>{postLike} likes</span>
+                    <span className='sm:inline'>{postLike}</span> {/* Show count on all screens */}
+                    <span className='hidden sm:inline'> likes</span> {/* Hide text on small screens */}
                 </div>
-                <div className='flex items-center mr-4'>
+                <div className='flex items-center mr-4 gap-1'>
                     <button onClick={() => setShowComments(!showComments)} className='mr-2 text-white'> 
                         <MessageCircle size={20} />
                     </button>
-                    <span>{comment} comments</span>
+                    <span className='sm:inline'>{comment}</span> {/* Show count on all screens */}
+                    <span className='hidden sm:inline'> comments</span> {/* Hide text on small screens */}
                 </div>
-                <div className='flex items-center'>
+                <div className='flex items-center gap-1'>
                     <button onClick={sharePostHandler} className='mr-2 text-white'> 
                         <FaPaperPlane />
                     </button>
-                    <span>{shares} shares</span>
+                    <span className='sm:inline'>{shares}</span> {/* Show count on all screens */}
+                    <span className='hidden sm:inline'> shares</span> {/* Hide text on small screens */}
                 </div>
             </div>
             {showComments && (
@@ -303,7 +306,7 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
                                 <button onClick={() => comment.is_liked ? unlikeCommentHandler(comment.id) : likeCommentHandler(comment.id)} className='text-white'>
                                     {comment.is_liked ? <FaHeart size={16} /> : <FaRegHeart size={16} />}
                                 </button>
-                                <span className='ml-2'>{comment.likes_count || 0} likes</span>
+                                <span className='ml-2'>{comment.likes_count || 0} likes</span> {/* Only show the number of likes */}
                             </div>
                         ))}
                     </div>
