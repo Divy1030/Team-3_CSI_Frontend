@@ -97,4 +97,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 If you have any questions or feedback, feel free to reach out:
 
 - **Email**: raidivy3010@gmail.com
-- **GitHub**: (https://github.com/Divy3010)
+- **GitHub**: (https://github.com/Divy1030)
