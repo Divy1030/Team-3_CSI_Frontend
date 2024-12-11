@@ -6,7 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, Mail } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import EyeAnimation from './EyeAnimation';
+import EyeIcon from './EyeIcon';
+import './Layout.css'; // Import the CSS file
 
 const Signup = () => {
     const [input, setInput] = useState({
@@ -18,6 +19,8 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
+    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const { user } = useSelector(store => store.auth);
     const navigate = useNavigate();
 
@@ -33,12 +36,28 @@ const Signup = () => {
         setShowConfirmPassword(!showConfirmPassword);
     }
 
+    const validatePassword = (password) => {
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return passwordRegex.test(password);
+    }
+
     const signupHandler = async (e) => {
         e.preventDefault();
+        setPasswordError(false);
+        setConfirmPasswordError(false);
+
+        if (!validatePassword(input.password)) {
+            setPasswordError(true);
+            toast.error("Password must be at least 8 characters long, include letters, numbers, and a special character.");
+            return;
+        }
+
         if (input.password !== input.confirmPassword) {
+            setConfirmPasswordError(true);
             toast.error("Passwords do not match!");
             return;
         }
+
         try {
             setLoading(true);
             const response = await axios.post('https://hola-project.onrender.com/api/auth/register/', {
@@ -48,19 +67,21 @@ const Signup = () => {
             });
             if (response.data.success) {
                 toast.success("Signup successful!");
-                navigate("/login"); // Redirect to login page after successful signup
+                navigate("/"); // Redirect to home page after successful signup
                 setInput({
                     username: "",
                     email: "",
                     password: "",
                     confirmPassword: ""
                 });
+            } else if (response.data.message === "User with this email is already registered.") {
+                toast.error("User with this email is already registered.");
             } else {
-                toast.error(response.data.message || "Signup failed!");
+                toast.error("User with this email is already registered.");
             }
         } catch (error) {
             console.log(error.response); // Log the error response for more details
-            toast.error("Signup failed! Please try again.");
+            toast.error("User with this email is already registered.");
         } finally {
             setLoading(false);
         }
@@ -76,7 +97,7 @@ const Signup = () => {
         <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-10 rounded-3xl">
             <form onSubmit={signupHandler} className="w-full max-w-md space-y-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="text-4xl font-bold font-baloo">
                         <span className="text-purple-400">hola'</span>
                         <span className="text-white"> mi amigos</span>
                     </h1>
@@ -106,11 +127,11 @@ const Signup = () => {
                         name="password"
                         value={input.password}
                         onChange={changeEventHandler}
-                        className="w-full bg-[#2c2c2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
+                        className={`w-full bg-[#2c2c2e] text-white rounded-lg border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white ${passwordError ? 'border-red-500' : 'border-[#746d91]'}`}
                         placeholder="Create password"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={togglePasswordVisibility}>
-                        <EyeAnimation isVisible={showPassword} />
+                        <EyeIcon isVisible={!showPassword} toggleVisibility={togglePasswordVisibility} />
                     </div>
                 </div>
 
@@ -120,11 +141,11 @@ const Signup = () => {
                         name="confirmPassword"
                         value={input.confirmPassword}
                         onChange={changeEventHandler}
-                        className="w-full bg-[#2c2c2e] text-white rounded-lg border-[#746d91] border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white"
+                        className={`w-full bg-[#2c2c2e] text-white rounded-lg border-[2px] focus:ring-1 focus:ring-purple-400 placeholder:text-white ${confirmPasswordError ? 'border-red-500' : 'border-[#746d91]'}`}
                         placeholder="Confirm password"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={toggleConfirmPasswordVisibility}>
-                        <EyeAnimation isVisible={showConfirmPassword} />
+                        <EyeIcon isVisible={!showConfirmPassword} toggleVisibility={toggleConfirmPasswordVisibility} />
                     </div>
                 </div>
 
@@ -144,9 +165,9 @@ const Signup = () => {
                 </Button>
 
                 <div className="flex items-center">
-                    <div className="flex-grow h-px bg-gray-700"></div>
-                    <span className="px-4 text-sm text-gray-400">OR</span>
-                    <div className="flex-grow h-px bg-gray-700"></div>
+                    <div className="flex-grow h-px bg-[#cbb3ff]"></div>
+                    <span className="px-4 text-sm text-[#cbb3ff]">OR</span>
+                    <div className="flex-grow h-px bg-[#cbb3ff]"></div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

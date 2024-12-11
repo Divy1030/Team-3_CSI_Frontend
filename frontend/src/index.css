@@ -1,13 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* global.css or any main CSS file */
+@import url('https://fonts.googleapis.com/css2?family=Babloo&display=swap');
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-
+body, html {
+  font-family: 'Helvetica', sans-serif;
+}
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+/* global.css */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #2c2c2e inset !important;
+  -webkit-text-fill-color: white !important;
 }

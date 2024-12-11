@@ -16,3 +16,6 @@
     -webkit-text-stroke: 15px white;
     opacity: 1;
 }
+.font-baloo {
+    font-family: 'Baloo', sans-serif;
+}

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Search, MapPin, Bell, ChevronDown, Menu, X, User, LogOut } from 'lucide-react';
 import { clearAuthUser } from '@/redux/authSlice';
 import { Button } from './ui/button';
 import CustomModal from './CustomModal';
 import NotificationsPanel from './NotificationsPanel';
 import axios from 'axios';
+import './Layout.css'; // Import the CSS file
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -19,6 +19,31 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState('');
+
+  const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(`https://hola-project.onrender.com/api/accounts/profile/${user?._id}/`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
+        console.log('User Profile API Response:', response.data); // Log the response from the API
+        const profileImageUrl = response.data.profile_photo ? `${CLOUDINARY_BASE_URL}${response.data.profile_photo}` : '';
+        console.log('Profile Image URL:', profileImageUrl); // Log the profile image URL
+        setProfileImage(profileImageUrl);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    if (user?._id) {
+      fetchUserProfile();
+    }
+  }, [user]);
 
   const logoutHandler = async () => {
     try {
@@ -93,7 +118,7 @@ const Navbar = () => {
 
   return (
     <div className='fixed top-0 z-10 left-0 w-full bg-black text-white p-4 flex items-center justify-between' style={{ height: '84px' }}>
-      <h1 className='font-bold text-5xl text-purple-400 cursor-pointer' onClick={() => navigate('/')}>hola'</h1>
+      <h1 className='font-bold text-5xl text-purple-400 cursor-pointer font-baloo' onClick={() => navigate('/')}>hola'</h1>
       <div className='hidden md:flex flex-1 justify-center'>
         <div className='relative flex items-center w-1/2'>
           <form onSubmit={handleSearch} className="w-full relative">
@@ -135,10 +160,15 @@ const Navbar = () => {
         </div>
         <div className='relative'>
           <button className='flex items-center cursor-pointer bg-transparent space-x-2' onClick={() => setOpen(!open)}>
-            <Avatar className='w-6 h-6' onClick={() => navigate(`/profile/${user?._id}`)}>
-              <AvatarImage src={user?.profilePicture ? `https://hola-project.onrender.com${user.profilePicture}` : ''} alt={user?.username} />
-              <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
-            </Avatar>
+            <div className='w-6 h-6 rounded-full overflow-hidden' onClick={() => navigate(`/profile/${user?._id}`)}>
+              {profileImage ? (
+                <img src={profileImage} alt={user?.username} className='w-full h-full object-cover' />
+              ) : (
+                <div className='w-full h-full bg-gray-500 flex items-center justify-center text-white'>
+                  {user?.username?.[0]}
+                </div>
+              )}
+            </div>
             <span className='text-sm text-white'>{user?.username}</span>
             <ChevronDown className='text-white' />
           </button>
@@ -152,10 +182,15 @@ const Navbar = () => {
                 >
                   {option.value === 'profile' && (
                     <>
-                      <Avatar className='w-6 h-6'>
-                        <AvatarImage src={user?.profilePicture ? `https://hola-project.onrender.com${user.profilePicture}` : ''} alt={user?.username} />
-                        <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
-                      </Avatar>
+                      <div className='w-6 h-6 rounded-full overflow-hidden'>
+                        {profileImage ? (
+                          <img src={profileImage} alt={user?.username} className='w-full h-full object-cover' />
+                        ) : (
+                          <div className='w-full h-full bg-gray-500 flex items-center justify-center text-white'>
+                            {user?.username?.[0]}
+                          </div>
+                        )}
+                      </div>
                       <span>{user?.username}</span>
                     </>
                   )}

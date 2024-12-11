@@ -30,6 +30,7 @@ const UserProfile = () => {
   const [backgroundPhotoLoading, setBackgroundPhotoLoading] = useState(false); // State for background photo loading
 
   const BASE_URL = 'https://hola-project.onrender.com';
+  const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
   const userId = localStorage.getItem('userId'); // Get the user ID from local storage
 
   useEffect(() => {
@@ -121,6 +122,8 @@ const UserProfile = () => {
       console.error(error);
       toast.error("An error occurred while fetching media.");
       setLoading(false);
+      console.log();
+      
     }
   };
 
@@ -212,14 +215,15 @@ const UserProfile = () => {
 
   const activityOptions = screenWidth < 770 ? ['Posts', 'Followers', 'Following'] : ['Posts', 'Comments', 'Media', 'Likes', 'Followers', 'Following'];
 
+
   return (
     <div className="w-full">
       <div className="bg-[#101011] text-white p-4 rounded-t-lg shadow-md w-full border-2 border-[#a698d7] mt-5">
       
         <div className="relative">
-          <img className="w-full h-48 object-cover rounded-t-lg" src={profile.background_photo ? `${BASE_URL}${profile.background_photo}` : "https://via.placeholder.com/600x200"} alt="Cover" />
+        <img className="w-full h-48 object-cover rounded-t-lg" src={profile.background_photo ? `${CLOUDINARY_BASE_URL}${profile.background_photo}` : "https://via.placeholder.com/600x200"} alt="Cover" />
           <div className="absolute left-4 bottom-[10px] transform translate-y-1/2">
-            <img className="w-24 h-24 rounded-full border-4 border-[#101011] object-cover" src={profile.profile_photo ? `${BASE_URL}${profile.profile_photo}` : "https://via.placeholder.com/150"} alt="Profile" />
+          <img className="w-24 h-24 rounded-full border-4 border-[#101011] object-cover" src={profile.profile_photo ? `${CLOUDINARY_BASE_URL}${profile.profile_photo}` : "https://via.placeholder.com/150"} alt="Profile" />
           </div>
         </div>
         <div className="mt-12 p-4">
@@ -262,13 +266,14 @@ const UserProfile = () => {
               <div className="border-l border-white h-6"></div> {/* Divider */}
               <div className="text-center">
                 <span className="text-lg font-bold">{profile.num_following}</span>
+                
                 <span className="block text-gray-400 text-xs">Following</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+      
    
       <div className="bg-[#101011] text-white p-4 border-2 border-[#a698d7] border-t-0 rounded-t-lg mt-10">
         <div className="flex justify-between items-center">

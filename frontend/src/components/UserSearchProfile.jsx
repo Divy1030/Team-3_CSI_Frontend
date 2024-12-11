@@ -9,6 +9,8 @@ const UserSearchProfile = () => {
   const location = useLocation();
   const { userProfile } = location.state || {};
 
+  const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
+
   if (!userProfile) {
     return <div>No user profile data available.</div>;
   }
@@ -23,9 +25,9 @@ const UserSearchProfile = () => {
         <div className='flex-grow p-4 mt-10 md:mt-0 md:ml-4'>
           <div className='bg-[#101011] text-white p-4 rounded-lg shadow-md'>
             <div className='relative'>
-              <img className='w-full h-48 object-cover rounded-t-lg' src={userProfile.background_photo ? `https://hola-project.onrender.com${userProfile.background_photo}` : 'https://via.placeholder.com/600x200'} alt='Cover' />
+              <img className='w-full h-48 object-cover rounded-t-lg' src={userProfile.background_photo ? `${CLOUDINARY_BASE_URL}${userProfile.background_photo}` : 'https://via.placeholder.com/600x200'} alt='Cover' />
               <div className='absolute left-4 bottom-[10px] transform translate-y-1/2'>
-                <img className='w-24 h-24 rounded-full border-4 border-[#101011] object-cover' src={userProfile.profile_photo ? `https://hola-project.onrender.com${userProfile.profile_photo}` : 'https://via.placeholder.com/150'} alt='Profile' />
+                <img className='w-24 h-24 rounded-full border-4 border-[#101011] object-cover' src={userProfile.profile_photo ? `${CLOUDINARY_BASE_URL}${userProfile.profile_photo}` : 'https://via.placeholder.com/150'} alt='Profile' />
               </div>
             </div>
             <div className='mt-12 p-4'>
