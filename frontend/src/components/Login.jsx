@@ -7,7 +7,8 @@ import { Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '@/redux/authSlice';
 import axios from 'axios';
-import EyeAnimation from './EyeAnimation'; // Import the EyeAnimation component
+import EyeIcon from './EyeIcon';
+import './Layout.css'; // Import the CSS file
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -96,9 +97,9 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-10 rounded-3xl form-container">
-      <form onSubmit={loginHandler} className="w-full max-w-md space-y-4 ">
+      <form onSubmit={loginHandler} className="w-full max-w-md space-y-4">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-4xl font-bold font-baloo">
             <span className="text-purple-400">hola'</span>
             <span className="text-white"> mi amigos</span>
           </h1>
@@ -123,7 +124,7 @@ const Login = () => {
             placeholder="Enter your password"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={togglePasswordVisibility}>
-            <EyeAnimation isVisible={showPassword} />
+            <EyeIcon isVisible={showPassword} toggleVisibility={togglePasswordVisibility} />
           </div>
         </div>
 
@@ -162,9 +163,9 @@ const Login = () => {
         </Button>
 
         <div className="flex items-center">
-          <div className="flex-grow h-px bg-gray-700"></div>
-          <span className="px-4 text-sm text-gray-400">OR</span>
-          <div className="flex-grow h-px bg-gray-700"></div>
+          <div className="flex-grow h-px bg-[#cbb3ff]"></div>
+          <span className="px-4 text-sm text-[#cbb3ff]">OR</span>
+          <div className="flex-grow h-px bg-[#cbb3ff]"></div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

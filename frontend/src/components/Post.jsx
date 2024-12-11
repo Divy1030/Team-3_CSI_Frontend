@@ -22,6 +22,7 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
     const [shares, setShares] = useState(post.shares || 0);
 
     const BASE_URL = 'https://hola-project.onrender.com';
+    const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -258,7 +259,7 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
             {post.media && (
                 <>
                     {console.log('Image URL:', post.media)} {/* Log the image URL */}
-                    <img src={post.media} alt={post.content} className='w-full h-auto max-w-[600px] max-h-[600px] object-cover rounded-lg mx-auto mb-4 sm:mb-2' /> {/* Add margin-bottom for small screens */}
+                    <img src={`${CLOUDINARY_BASE_URL}${post.media}`} alt={post.content} className='w-full h-auto max-w-[600px] max-h-[600px] object-cover rounded-lg mx-auto mb-4 sm:mb-2' /> {/* Add margin-bottom for small screens */}
                 </>
             )} 
             <div className='flex items-center mb-2 ml-5'> {/* Align like, comment, and share in a line */}

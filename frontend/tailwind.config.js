@@ -9,9 +9,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // screens: {
-      //   'lg-custom': '1100px', // Custom breakpoint for 1100px
-      // },
+      colors: {
+        'grey-gradient-start': '#545054',
+        'grey-gradient-end': '#262626',
+      },
       keyframes: {
         text: {
           '0%': { width: '0%', color: 'white' },
