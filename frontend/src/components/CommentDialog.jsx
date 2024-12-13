@@ -19,6 +19,8 @@ const CommentDialog = ({ open, setOpen, postId }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
+  const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
+
   const fetchComments = async () => {
     try {
       const res = await axios.get(`https://hola-project.onrender.com/api/posts/${postId}/comments/`, {
@@ -216,7 +218,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
             <div className='w-full md:w-1/2 border-none hidden md:flex'>
               {post && post.media && (
                 <img
-                  src={`https://hola-project.onrender.com${post.media}`}
+                  src={`${CLOUDINARY_BASE_URL}${post.media}`}
                   alt="post_img"
                   className='w-full h-64 md:h-[500px] object-cover rounded-l-lg'
                 />
@@ -234,7 +236,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
                   <div className='flex gap-3 items-center'>
                     <Link to={`/profile/${post?.created_by?._id}`}>
                       <Avatar>
-                        <AvatarImage src={`https://hola-project.onrender.com${userProfile?.profile_photo}`} />
+                        <AvatarImage src={`${CLOUDINARY_BASE_URL}${userProfile?.profile_photo}`} />
                         <AvatarFallback>{post?.created_by?.username?.[0]}</AvatarFallback>
                       </Avatar>
                     </Link>
@@ -272,7 +274,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
               <div className='w-full md:w-1/2 border-none hidden md:flex'>
                 {post && post.media && (
                   <img
-                    src={`https://hola-project.onrender.com${post.media}`}
+                    src={`${CLOUDINARY_BASE_URL}${post.media}`}
                     alt="post_img"
                     className='w-full h-64 md:h-[500px] object-cover rounded-l-lg'
                   />
@@ -290,7 +292,7 @@ const CommentDialog = ({ open, setOpen, postId }) => {
                     <div className='flex gap-3 items-center'>
                       <Link to={`/profile/${post?.created_by?._id}`}>
                         <Avatar>
-                          <AvatarImage src={`https://hola-project.onrender.com${userProfile?.profile_photo}`} />
+                          <AvatarImage src={`${CLOUDINARY_BASE_URL}${userProfile?.profile_photo}`} />
                           <AvatarFallback>{post?.created_by?.username?.[0]}</AvatarFallback>
                         </Avatar>
                       </Link>

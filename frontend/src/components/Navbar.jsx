@@ -45,6 +45,20 @@ const Navbar = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const logoutHandler = async () => {
     try {
       dispatch(clearAuthUser());

@@ -1,15 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar'; 
 import LeftSidebar from './LeftSidebar'; 
 import RightSidebar from './RightSidebar'; 
+import axiosInstance from '../redux/axiosInstance'; // Use axiosInstance for token refresh
 import './Profile.css';
 
 const UserSearchProfile = () => {
   const location = useLocation();
   const { userProfile } = location.state || {};
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/dy1a8nyco/';
+  const BASE_URL = 'https://hola-project.onrender.com';
+
+  useEffect(() => {
+    // Check if the user is already following the searched user
+    const checkFollowingStatus = async () => {
+      try {
+        const auth = JSON.parse(localStorage.getItem('auth'));
+        if (!auth || !auth.user || !auth.user.id) {
+          console.error('User ID not found in local storage');
+          return;
+        }
+        const userId = auth.user.id;
+        const response = await axiosInstance.get(`${BASE_URL}/api/accounts/following/${userId}/`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        const followingList = response.data;
+        const isUserFollowing = followingList.some(user => user.id === userProfile.id);
+        setIsFollowing(isUserFollowing);
+      } catch (error) {
+        console.error('Error checking follow status:', error);
+      }
+    };
+
+    if (userProfile) {
+      checkFollowingStatus();
+    }
+  }, [userProfile]);
+
+  const handleFollow = async (userId) => {
+    try {
+      const response = await axiosInstance.post(`${BASE_URL}/api/accounts/follow/${userId}/`, {}, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      });
+      console.log('Follow API Response:', response.data); // Log the response from the API
+      setIsFollowing(response.data.is_following);
+    } catch (error) {
+      console.error('Error following user:', error);
+    }
+  };
 
   if (!userProfile) {
     return <div>No user profile data available.</div>;
@@ -33,6 +78,12 @@ const UserSearchProfile = () => {
             <div className='mt-12 p-4'>
               <h2 className='text-xl font-semibold'>{userProfile.username}</h2>
               <p className='text-sm text-gray-400'>{userProfile.bio || "No bio available"}</p>
+              <button
+                onClick={() => handleFollow(userProfile.id)}
+                className={`mt-4 px-4 py-2 rounded-lg ${isFollowing ? 'bg-red-500' : 'bg-green-500'} text-white`}
+              >
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
               <div className='flex justify-between mt-4'>
                 <div className='text-center'>
                   <span className='text-lg font-bold'>{userProfile.num_posts}</span>

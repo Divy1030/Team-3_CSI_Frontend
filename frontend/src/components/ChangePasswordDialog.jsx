@@ -3,28 +3,28 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Import axios
+import { toast } from 'sonner'; // Import sonner for toast notifications
 
 const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false); // Loading state
 
   const handleChangePassword = async () => {
     // Reset messages
-    setError('');
-    setSuccess('');
+    setLoading(true);
 
     // Validate passwords
     if (newPassword !== confirmPassword) {
-      setError('New password and confirm password do not match.');
+      toast.error('New password and confirm password do not match.');
+      setLoading(false);
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters long.');
+      toast.error('Password must be at least 8 characters long.');
+      setLoading(false);
       return;
     }
 
@@ -33,11 +33,10 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
     console.log('Access Token:', token); // Debug log
 
     if (!token) {
-      setError('Authentication token not found. Please log in again.');
+      toast.error('Authentication token not found. Please log in again.');
+      setLoading(false);
       return;
     }
-
-    setLoading(true);
 
     try {
       const response = await axios.post('https://hola-project.onrender.com/api/auth/change-password/', {
@@ -53,7 +52,7 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
       console.log('Response Data:', response.data); // Debug log
 
       if (response.status === 200) {
-        setSuccess(response.data.message || 'Password changed successfully.');
+        toast.success(response.data.message || 'Password changed successfully.');
         // Optionally, reset form fields
         setOldPassword('');
         setNewPassword('');
@@ -62,11 +61,15 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
         // onClose();
       } else {
         // Handle errors
-        setError(response.data.non_field_errors || 'An error occurred. Please try again.');
+        toast.error(response.data.non_field_errors || 'An error occurred. Please try again.');
       }
     } catch (err) {
       console.error('Fetch Error:', err); // Debug log
-      setError('Failed to connect to the server. Please try again later.');
+      if (err.response && err.response.data && err.response.data.non_field_errors) {
+        toast.error(err.response.data.non_field_errors[0]);
+      } else {
+        toast.error('Failed to connect to the server. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,16 +112,6 @@ const ChangePasswordDialog = ({ isOpen, onClose, className }) => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full bg-[#4b4b4b] text-white py-3 px-4 rounded-lg mb-3 border-2 border-[#9085b6]"
               />
-              {error && (
-                <p className="text-sm text-red-500 mb-6">
-                  {error}
-                </p>
-              )}
-              {success && (
-                <p className="text-sm text-green-500 mb-6">
-                  {success}
-                </p>
-              )}
               <button
                 onClick={handleChangePassword}
                 className="w-full bg-[#6c61a1] hover:bg-purple-600 text-white py-3 px-4 rounded-lg"

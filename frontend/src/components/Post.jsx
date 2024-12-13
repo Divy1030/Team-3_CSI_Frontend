@@ -220,8 +220,8 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
         <div className='bg-[#343434] p-3 rounded-xl shadow-md max-w-2xl border-2 border-[#cab3fe] mx-auto text-white'> {/* Change background and text color */}
             <div className='flex items-center mb-2'> 
                 <Avatar className='w-8 h-8 rounded-full mr-2'>
-                    <AvatarImage src={post.created_by?.profilePicture} alt={post.created_by?.username} />
-                    <AvatarFallback>{post.created_by?.username?.[0]}</AvatarFallback>
+                    <AvatarImage src={post.profile_photo ? post.profile_photo : 'https://via.placeholder.com/150'} alt={post.created_by} />
+                    <AvatarFallback>{post.created_by?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col'>
                     <span className='font-bold text-sm'>{post.created_by}</span>
@@ -255,7 +255,7 @@ const Post = ({ post, removePost, fetchAllPosts, isExplorePage }) => {
                     </PopoverContent>
                 </Popover>
             </div>
-            <p className='mb-2 text-sm'>{post.content}</p> 
+            <p className='mb-2 text-sm lg:ml-5'>{post.content}</p> 
             {post.media && (
                 <>
                     {console.log('Image URL:', post.media)} {/* Log the image URL */}

@@ -108,7 +108,7 @@ const ExploreContent = () => {
       {selectedOption === 'Top' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {posts.map(post => (
-            <div key={post.id} className="cursor-pointer" onClick={() => setSelectedPost(post)}>
+            <div key={post.id} className="cursor-pointer" >
               <img src={post.media} alt={post.content} className="w-full h-auto object-cover rounded-lg" />
             </div>
           ))}
