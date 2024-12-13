@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner'; // Import Toaster for toast notifications
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, Mail } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -61,31 +61,39 @@ const Signup = () => {
         try {
             setLoading(true);
             const response = await axios.post('https://hola-project.onrender.com/api/auth/register/', {
-                full_name: input.username,
-                email: input.email,
-                password: input.password
+              full_name: input.username,
+              email: input.email,
+              password: input.password
             });
-            if (response.data.success) {
-                toast.success("Signup successful!");
-                navigate("/"); // Redirect to home page after successful signup
-                setInput({
-                    username: "",
-                    email: "",
-                    password: "",
-                    confirmPassword: ""
-                });
+      
+            if (response.data.message === "User registered successfully") {
+              toast.success("Signup successful!");
+              setTimeout(() => {
+                navigate("/"); // Redirect to login page after successful signup
+              }, 1000); // Delay to allow the toast to be visible
+              setInput({
+                username: "",
+                email: "",
+                password: "",
+                confirmPassword: ""
+              });
             } else if (response.data.message === "User with this email is already registered.") {
-                toast.error("User with this email is already registered.");
+              toast.error("User with this email is already registered.");
             } else {
-                toast.error("User with this email is already registered.");
+              toast.error(response.data.message || "An error occurred during signup.");
             }
-        } catch (error) {
+          } catch (error) {
             console.log(error.response); // Log the error response for more details
-            toast.error("User with this email is already registered.");
-        } finally {
+            if (error.response && error.response.data) {
+              const errorMessage = error.response.data.message || "An error occurred during signup.";
+              toast.error(errorMessage);
+            } else {
+              toast.error("Failed to connect to the server. Please try again later.");
+            }
+          } finally {
             setLoading(false);
+          }
         }
-    }
 
     useEffect(() => {
         if (user) {
@@ -93,8 +101,12 @@ const Signup = () => {
         }
     }, [user, navigate]);
 
+    // Determine toast position based on screen size
+    const toastPosition = window.innerWidth <= 768 ? "top-right" : "top-center";
+
     return (
-        <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-10 rounded-3xl">
+        <div className="flex items-center justify-center bg-gradient-to-b from-grey-gradient-start to-grey-gradient-end p-4 sm:p-10 rounded-3xl">
+            {/* <Toaster position={toastPosition} /> Add Toaster for toast notifications */}
             <form onSubmit={signupHandler} className="w-full max-w-md space-y-4">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold font-baloo">
